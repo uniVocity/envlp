@@ -217,7 +217,7 @@
 		<dependency>
 			<groupId>com.univocity</groupId>
 			<artifactId>envlp-cardano-wallet</artifactId>
-			<version>2020.11.17-SNAPSHOT</version>
+			<version>2020.11.26-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -279,7 +279,7 @@
 		<dependency>
 			<groupId>com.univocity</groupId>
 			<artifactId>envlp-cardano-wallet</artifactId>
-			<version>2020.11.17-SNAPSHOT</version>
+			<version>2020.11.26-SNAPSHOT</version>
 			<scope>test</scope>
 			<type>test-jar</type>
 		</dependency>
