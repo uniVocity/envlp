@@ -82,8 +82,12 @@ public class MainMenu extends JMenuBar {
 	private JMenuItem getViewCardanoNodeLogMenuItem() {
 		if (viewCardanoNodeLogMenuItem == null) {
 			viewCardanoNodeLogMenuItem = new JMenuItem("Cardano node log");
-			viewCardanoNodeLogMenuItem.setMnemonic(KeyEvent.VK_N);
-			viewCardanoNodeLogMenuItem.addActionListener((e) -> main.openCardanoNodeLogTab());
+			if(main.cardanoNodeControlPanel != null) {
+				viewCardanoNodeLogMenuItem.setMnemonic(KeyEvent.VK_N);
+				viewCardanoNodeLogMenuItem.addActionListener((e) -> main.openCardanoNodeLogTab());
+			} else {
+				viewCardanoNodeLogMenuItem.setEnabled(false);
+			}
 		}
 		return viewCardanoNodeLogMenuItem;
 	}
@@ -91,8 +95,12 @@ public class MainMenu extends JMenuBar {
 	private JMenuItem getViewCardanoWalletLogMenuItem() {
 		if (viewCardanoWalletLogMenuItem == null) {
 			viewCardanoWalletLogMenuItem = new JMenuItem("Cardano wallet log");
-			viewCardanoWalletLogMenuItem.setMnemonic(KeyEvent.VK_W);
-			viewCardanoWalletLogMenuItem.addActionListener((e) -> main.openCardanoWalletLogTab());
+			if(main.cardanoWalletControlPanel != null){
+				viewCardanoWalletLogMenuItem.setMnemonic(KeyEvent.VK_W);
+				viewCardanoWalletLogMenuItem.addActionListener((e) -> main.openCardanoWalletLogTab());
+			} else {
+				viewCardanoWalletLogMenuItem.setEnabled(false);
+			}
 		}
 		return viewCardanoWalletLogMenuItem;
 	}

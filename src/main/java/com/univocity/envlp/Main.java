@@ -3,6 +3,7 @@ package com.univocity.envlp;
 import com.github.weisj.darklaf.*;
 import com.github.weisj.darklaf.settings.*;
 import com.github.weisj.darklaf.theme.*;
+import com.univocity.cardano.wallet.builders.server.*;
 import com.univocity.cardano.wallet.embedded.services.*;
 import com.univocity.envlp.database.*;
 import com.univocity.envlp.ui.*;
@@ -72,8 +73,8 @@ public class Main {
 	private JTabbedPane applicationTabs = new JTabbedPane();
 
 	private final LogPanel applicationLogPanel = new LogPanel();
-	private final ProcessControlPanel cardanoNodeControlPanel;
-	private final ProcessControlPanel cardanoWalletControlPanel;
+	final ProcessControlPanel cardanoNodeControlPanel;
+	final ProcessControlPanel cardanoWalletControlPanel;
 
 	private WalletManagementPanel walletPanel;
 	private JPanel themeSettingsPanel;
@@ -91,7 +92,6 @@ public class Main {
 		frame.setLocationRelativeTo(null);
 		frame.setLayout(new BorderLayout());
 		frame.add(getApplicationTabs(), BorderLayout.CENTER);
-		frame.setJMenuBar(new MainMenu(this));
 
 		Image image = Utils.getImage("images/envlp.png");
 		if (image != null) {
@@ -100,27 +100,35 @@ public class Main {
 
 		openWalletsTab();
 
-		String toolsDir = Configuration.getInstance().getCardanoToolsDirPath();
-		cardanoNodeControlPanel = intializeProcess(new CardanoNodeManager(toolsDir).setStartupCommand(
-				"run" +
-						" --topology {config.dir}/mainnet-topology.json" +
-						" --database-path {blockchain.dir}" +
-						" --socket-path {blockchain.dir}/node.socket" +
-						" --host-addr 0.0.0.0" +
-						" --port {cardano.node.port}" +
-						" --config {config.dir}/mainnet-config.json"
-		));
-		cardanoWalletControlPanel = intializeProcess(new CardanoWalletManager(toolsDir).setStartupCommand(
-				"serve" +
-						" --mainnet" +
-						" --database {blockchain.dir}" +
-						" --node-socket {blockchain.dir}/node.socket" +
-						" --port {cardano.wallet.port}")
-		);
+		Configuration config = Configuration.getInstance();
+
+		int port = config.getCardanoNodePort();
+		if (port == -1) {
+			WalletServer.remote("localhost").connectToPort(config.getWalletServicePort());
+			cardanoNodeControlPanel = null;
+			cardanoWalletControlPanel = null;
+		} else {
+			EmbeddedWalletServer wallet = WalletServer.embedded()
+					.binariesIn(config.getCardanoToolsDirPath())
+					.mainnetNode()
+					.configuration(config.getNodeConfigurationFilePath())
+					.topology(config.getTopologyFilePath())
+					.storeBlockchainIn(config.getBlockchainDirPath())
+					.port(config.getCardanoNodePort())
+					.ignoreOutput()
+					.wallet()
+					.enableHttps()
+					.port(config.getWalletServicePort())
+					.ignoreOutput();
+
+			cardanoNodeControlPanel = intializeProcess(wallet.getNodeManager());
+			cardanoWalletControlPanel = intializeProcess(wallet.getWalletManager());
+		}
+
+		frame.setJMenuBar(new MainMenu(this));
 	}
 
 	private ProcessControlPanel intializeProcess(ProcessManager process) {
-		Configuration.getInstance().replaceParameters(process);
 		ProcessControlPanel out = new ProcessControlPanel(process);
 		out.startProcess();
 		return out;

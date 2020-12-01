@@ -119,6 +119,18 @@ public class Configuration {
 	}
 
 	public String getWalletServiceBaseUrl() {
-		return "http://localhost:" + getWalletServicePort();
+		return "https://localhost:" + getWalletServicePort();
+	}
+
+	public int getCardanoNodePort() {
+		return config.getInteger("cardano.node.port", -1);
+	}
+
+	public String getTopologyFilePath() {
+		return configurationDir.toPath().resolve("mainnet-topology.json").toFile().getAbsolutePath();
+	}
+
+	public String getNodeConfigurationFilePath() {
+		return configurationDir.toPath().resolve("mainnet-config.json").toFile().getAbsolutePath();
 	}
 }
