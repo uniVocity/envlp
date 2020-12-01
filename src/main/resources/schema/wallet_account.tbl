@@ -1,0 +1,13 @@
+CREATE TABLE wallet_account (
+
+	wallet_id BIGINT NOT NULL,
+    account_idx BIGINT NOT NULL,
+
+    public_root_key VARCHAR(255) NOT NULL,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+
+    CONSTRAINT wallet_account_key PRIMARY KEY (wallet_id, account_idx),
+    CONSTRAINT public_root_key_uq UNIQUE (public_root_key),
+    CONSTRAINT wallet_account_wallet_id FOREIGN KEY (wallet_id) REFERENCES wallet(id) ON DELETE CASCADE
+);

@@ -1,0 +1,10 @@
+CREATE TABLE wallet (
+
+	id BIGINT NOT NULL AUTO_INCREMENT,
+
+	name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+
+    CONSTRAINT wallet_pk PRIMARY KEY (id),
+    CONSTRAINT wallet_name_uq UNIQUE (name)
+);
