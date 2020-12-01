@@ -15,7 +15,7 @@
 		<append>true</append>
 	</appender>
 
-	<appender name="FORM" class="com.univocity.freecommerce.utils.Appender"/>
+	<appender name="FORM" class="com.univocity.envlp.utils.Appender"/>
 
 	<root level="TRACE">
 		<appender-ref ref="FILE"/>

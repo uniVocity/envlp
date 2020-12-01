@@ -43,10 +43,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
+				<version>3.8.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>15</source>
+					<target>15</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -67,7 +67,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.10</version>
+				<version>3.1.2</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -87,7 +87,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
+				<version>3.2.0</version>
 				<configuration>
 					<excludes>
 						<exclude>**/cli/**</exclude>
@@ -102,7 +102,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>com.univocity.freecommerce.Main</mainClass>
+							<mainClass>com.univocity.envlp.Main</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>config/</Class-Path>
@@ -113,7 +113,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.7</version>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>copy-resources</id>
@@ -160,7 +160,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<phase>install</phase>
