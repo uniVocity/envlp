@@ -4,6 +4,7 @@ import com.github.weisj.darklaf.components.*;
 import com.univocity.envlp.database.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.*;
+import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.wallet.*;
 
 import javax.swing.*;

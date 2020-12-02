@@ -18,6 +18,7 @@ public class Configuration {
 	private final PropertyBasedConfiguration config;
 
 	private final Map<String, String> dirPaths = new ConcurrentHashMap<>();
+	private final Map<String, Integer> ports = new ConcurrentHashMap<>();
 
 	private File applicationDir;
 	private File configurationDir;
@@ -115,7 +116,7 @@ public class Configuration {
 	}
 
 	public int getWalletServicePort() {
-		return config.getInteger("cardano.wallet.port", 3002);
+		return getPort("cardano.wallet.port", 3002);
 	}
 
 	public String getWalletServiceBaseUrl() {
@@ -123,7 +124,31 @@ public class Configuration {
 	}
 
 	public int getCardanoNodePort() {
-		return config.getInteger("cardano.node.port", -1);
+		return getPort("cardano.node.port", 3001);
+	}
+
+	private int getPort(String portProperty, int defaultPort) {
+		Integer out = ports.get(portProperty);
+		if (out == null) {
+			synchronized (ports) {
+				out = ports.get(portProperty);
+				if(out == null) {
+					String port = config.getProperty(portProperty);
+					try {
+						if ("random".equalsIgnoreCase(port)) {
+							out = Utils.randomPortNumber();
+						} else {
+							out = Integer.parseInt(port);
+						}
+					} catch (Exception e) {
+						log.warn("Could not read property '" + portProperty + "' value '" + port + "', using default " + defaultPort, e);
+						out = defaultPort;
+					}
+					ports.put(portProperty, out);
+				}
+			}
+		}
+		return out;
 	}
 
 	public String getTopologyFilePath() {

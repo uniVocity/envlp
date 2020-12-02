@@ -28,7 +28,7 @@ public class Main {
 	private static Theme defaultTheme;
 
 	private static void initUI() {
-		log.info("\n=================================\nStarting up free-commerce wallet\n=================================");
+		log.info("\n=================================\nStarting up ENVLP wallet\n=================================");
 
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("swing.aatext", "true");
@@ -38,7 +38,7 @@ public class Main {
 		System.setProperty("user.country", "US");
 
 		try {
-			defaultTheme = new DarculaTheme();
+			defaultTheme = new OneDarkTheme();
 			LafManager.install(defaultTheme);
 			LafManager.enabledPreferenceChangeReporting(true);
 
@@ -82,6 +82,8 @@ public class Main {
 
 	private static Main instance;
 	private static boolean running = false;
+	private RemoteWalletServer walletServer;
+	private EpochDetailsPanel epochDetailsPanel;
 
 	private Main() {
 		frame = new JFrame();
@@ -104,7 +106,7 @@ public class Main {
 
 		int port = config.getCardanoNodePort();
 		if (port == -1) {
-			WalletServer.remote("localhost").connectToPort(config.getWalletServicePort());
+			walletServer = WalletServer.remote("localhost").connectToPort(config.getWalletServicePort());
 			cardanoNodeControlPanel = null;
 			cardanoWalletControlPanel = null;
 		} else {
@@ -117,15 +119,18 @@ public class Main {
 					.port(config.getCardanoNodePort())
 					.ignoreOutput()
 					.wallet()
-					.enableHttps()
+					//.enableHttps()
 					.port(config.getWalletServicePort())
 					.ignoreOutput();
 
 			cardanoNodeControlPanel = intializeProcess(wallet.getNodeManager());
 			cardanoWalletControlPanel = intializeProcess(wallet.getWalletManager());
+			walletServer = wallet;
 		}
 
 		frame.setJMenuBar(new MainMenu(this));
+
+		frame.add(getEpochDetailsPanel(), BorderLayout.SOUTH);
 	}
 
 	private ProcessControlPanel intializeProcess(ProcessManager process) {
@@ -213,6 +218,13 @@ public class Main {
 
 	public LogPanel getApplicationLogPanel() {
 		return applicationLogPanel;
+	}
+
+	public EpochDetailsPanel getEpochDetailsPanel(){
+		if(epochDetailsPanel == null){
+			epochDetailsPanel = new EpochDetailsPanel(walletServer);
+		}
+		return epochDetailsPanel;
 	}
 
 	public static boolean isRunning() {

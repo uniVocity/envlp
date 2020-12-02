@@ -2,6 +2,7 @@ package com.univocity.envlp.ui.wallet.management;
 
 import com.github.weisj.darklaf.components.border.*;
 import com.univocity.envlp.ui.*;
+import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.ui.wallet.actions.*;
 import com.univocity.envlp.ui.workflow.*;
 import com.univocity.envlp.utils.*;

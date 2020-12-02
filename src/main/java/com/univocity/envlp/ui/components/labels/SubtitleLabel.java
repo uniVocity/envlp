@@ -1,4 +1,4 @@
-package com.univocity.envlp.ui;
+package com.univocity.envlp.ui.components.labels;
 
 import javax.swing.*;
 

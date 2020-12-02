@@ -1,6 +1,7 @@
 package com.univocity.envlp.ui.workflow;
 
 import com.univocity.envlp.ui.*;
+import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.wallet.*;
 
 import javax.swing.*;

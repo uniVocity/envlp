@@ -1,6 +1,6 @@
 package com.univocity.envlp.ui.wallet.management;
 
-import com.univocity.envlp.ui.*;
+import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.wallet.*;
 import org.slf4j.*;
 
