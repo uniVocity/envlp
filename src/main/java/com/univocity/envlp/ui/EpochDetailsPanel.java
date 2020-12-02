@@ -90,7 +90,7 @@ public class EpochDetailsPanel extends JPanel {
 	public JPanel getSyncPanel() {
 		if (syncPanel == null) {
 			syncPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-			syncPanel.add(new JLabel("Blockchain synchronization status: "));
+			syncPanel.add(new JLabel("Status: "));
 			syncPanel.add(syncLbl = new PlainTextLabel());
 			updateSynchronizationStatus(null);
 		}
@@ -167,7 +167,6 @@ public class EpochDetailsPanel extends JPanel {
 		} else if (networkInformation.synchronizationStatus() == SynchronizationStatus.SYNCING) {
 			syncLbl.setText("blocks synced " + networkInformation.formattedSynchronizationProgressPercentage());
 		}
-
 	}
 
 	public static void main(String... args) {

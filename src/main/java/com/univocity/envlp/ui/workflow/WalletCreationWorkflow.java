@@ -1,10 +1,12 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.cardano.wallet.builders.wallets.*;
 import com.univocity.cardano.wallet.common.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.utils.Utils;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.Wallet;
 import org.apache.commons.lang3.*;
 
 import javax.swing.*;
@@ -20,10 +22,12 @@ public class WalletCreationWorkflow extends JPanel {
 	private String[] STEPS = new String[0];
 
 	private static final String WALLET_DETAILS = "WALLET_DETAILS";
+	private static final String WALLET_TYPE = "WALLET_TYPE";
+	private static final String WORD_COUNT = "WORD_COUNT";
 	private static final String GENERATE_SEED = "GENERATE_SEED";
 	private static final String INPUT_SEED = "INPUT_SEED";
 
-	private static final String[] RESTORE_STEPS = {WALLET_DETAILS, INPUT_SEED};
+	private static final String[] RESTORE_STEPS = {WALLET_TYPE, WORD_COUNT, WALLET_DETAILS, INPUT_SEED};
 	private static final String[] CREATE_STEPS = {WALLET_DETAILS, GENERATE_SEED};
 
 	private JPanel cardPanel;
@@ -39,6 +43,8 @@ public class WalletCreationWorkflow extends JPanel {
 	private final BiConsumer<String, String> workflowStepDescription;
 	private WalletSetupPanel walletSetupPanel;
 	private SeedGenerationPanel seedGenerationPanel;
+	private WalletTypeSelectionPanel walletTypeSelectionPanel;
+	private SeedWordCountSelectionPanel wordCountSelectionPanel;
 	private SeedInputPanel seedInputPanel;
 
 	private Map<String, WorkflowPanel> panels = new HashMap<>();
@@ -60,6 +66,8 @@ public class WalletCreationWorkflow extends JPanel {
 
 			panels.put(WALLET_DETAILS, walletSetupPanel = new WalletSetupPanel());
 			panels.put(GENERATE_SEED, seedGenerationPanel = new SeedGenerationPanel());
+			panels.put(WALLET_TYPE, walletTypeSelectionPanel = new WalletTypeSelectionPanel());
+			panels.put(WORD_COUNT, wordCountSelectionPanel = new SeedWordCountSelectionPanel(walletTypeSelectionPanel));
 			panels.put(INPUT_SEED, seedInputPanel = new SeedInputPanel());
 
 			for (Map.Entry<String, WorkflowPanel> e : panels.entrySet()) {
@@ -101,7 +109,7 @@ public class WalletCreationWorkflow extends JPanel {
 
 	public JButton getBtRestoreWallet() {
 		if (btRestoreWallet == null) {
-			btRestoreWallet = newActionButton("images/restore-ic.inline.png","Restore wallet", "Restore an existing wallet using your 24 words seed phrase");
+			btRestoreWallet = newActionButton("images/restore-ic.inline.png","Restore wallet", "Restore an existing wallet using your seed phrase");
 			btRestoreWallet.addActionListener(e -> beginWalletRestoration());
 		}
 		return btRestoreWallet;
@@ -115,7 +123,7 @@ public class WalletCreationWorkflow extends JPanel {
 
 	private void beginWalletRestoration() {
 		STEPS = RESTORE_STEPS;
-		workflowStepDescription.accept("Restoring wallet", "Use an existing 24 words seed phrase to restore a wallet");
+		workflowStepDescription.accept("Restoring wallet", "Use an existing seed phrase to restore a wallet");
 		next();
 	}
 
