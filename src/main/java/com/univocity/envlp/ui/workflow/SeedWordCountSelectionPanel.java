@@ -18,6 +18,7 @@ public class SeedWordCountSelectionPanel extends WorkflowPanel {
 	private JRadioButton _15Words;
 	private JRadioButton _24Words;
 	private JRadioButton _27Words;
+	private JRadioButton none;
 
 	private JPanel seedWordCountPanel;
 	private Integer wordCount;
@@ -56,6 +57,7 @@ public class SeedWordCountSelectionPanel extends WorkflowPanel {
 			_15Words = getOption("<html>15 words <i>(Yoroi)</i></html>");
 			_24Words = getOption("<html>24 words <i>(Default)</i></html>");
 			_27Words = getOption("<html>27 words <i>(Paper wallet)</i></html>");
+			none = getOption("None"); //invisible
 		}
 		return seedWordCountPanel;
 	}
@@ -128,10 +130,7 @@ public class SeedWordCountSelectionPanel extends WorkflowPanel {
 
 	@Override
 	protected void clearFields() {
-		_12Words.setSelected(false);
-		_15Words.setSelected(false);
-		_24Words.setSelected(false);
-		_27Words.setSelected(false);
+		none.setSelected(true);
 
 		wordCount = null;
 	}

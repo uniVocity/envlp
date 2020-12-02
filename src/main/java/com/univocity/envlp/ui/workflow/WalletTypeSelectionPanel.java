@@ -15,6 +15,7 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 	private ButtonGroup walletType;
 	private JRadioButton shelley;
 	private JRadioButton byron;
+	private JRadioButton none;
 	private String type;
 
 	public static final String BYRON = "BYRON";
@@ -51,6 +52,7 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 			walletType = new ButtonGroup();
 			walletTypePanel.add(shelley = getOption("Shelley wallet"));
 			walletTypePanel.add(byron = getOption("Legacy Byron wallet"));
+			none = getOption("None"); //invisible
 		}
 		return walletTypePanel;
 	}
@@ -74,7 +76,7 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 
 	@Override
 	protected String getInputErrorMessage() {
-		return "<p>Please select the type of wallet you are restoring to proceed</p>";
+		return "Please select the type of wallet you are restoring to proceed";
 	}
 
 	@Override
@@ -108,6 +110,7 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 	protected void clearFields() {
 		byron.setSelected(false);
 		shelley.setSelected(false);
+		none.setSelected(true);
 		type = null;
 	}
 
