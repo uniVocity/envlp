@@ -26,21 +26,19 @@ public class SeedPhraseInput extends JTextArea {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
-				boolean isSpace = e.getKeyChar() == KeyEvent.VK_SPACE;
-				if (isSpace || e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
+				if (e.getKeyChar() == KeyEvent.VK_SPACE || e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
 					if (popupMenu.insertSelection()) {
-						if (!isSpace) {
+						if(e.getKeyChar() != KeyEvent.VK_SPACE) {
 							e.consume();
-							final int position = getCaretPosition();
-							SwingUtilities.invokeLater(() -> {
-								try {
-									getDocument().remove(position - 1, 1);
-									getDocument().insertString(getDocument().getLength(), " ", null);
-								} catch (BadLocationException ex) {
-									log.error("Error processing seed word auto-completion", ex);
-								}
-							});
 						}
+						final int position = getCaretPosition();
+						SwingUtilities.invokeLater(() -> {
+							try {
+								getDocument().remove(position - 1, 1);
+							} catch (BadLocationException ex) {
+								log.error("Error processing seed word auto-completion", ex);
+							}
+						});
 					}
 				}
 			}
@@ -62,6 +60,13 @@ public class SeedPhraseInput extends JTextArea {
 		});
 	}
 
+	void insertString(int offset, String str) {
+		try {
+			getDocument().insertString(offset, str.trim() + " ", null);
+		} catch (BadLocationException ex) {
+			log.error("Error processing seed word auto-completion", ex);
+		}
+	}
 
 	protected void showSuggestions() {
 		SwingUtilities.invokeLater(this::displaySuggestions);

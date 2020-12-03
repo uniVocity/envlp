@@ -1,5 +1,6 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.cardano.wallet.common.*;
 import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.ui.components.wordlist.*;
@@ -96,7 +97,10 @@ public class SeedInputPanel extends WorkflowPanel {
 				return null;
 			}
 
-			String privateKey = new WalletService().getAddressManager().generatePrivateKey(seed);
+			AddressManager addressManager = new WalletService().getAddressManager();
+			addressManager.setStyle(wordCountSelectionPanel.getWalletType());
+
+			String privateKey = addressManager.generatePrivateKey(seed);
 			if (privateKey == null) {
 				error = "Invalid seed phrase";
 				return null;

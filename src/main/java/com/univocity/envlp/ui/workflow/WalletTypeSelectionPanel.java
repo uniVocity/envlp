@@ -1,5 +1,6 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.labels.*;
 
@@ -16,10 +17,8 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 	private JRadioButton shelley;
 	private JRadioButton byron;
 	private JRadioButton none;
-	private String type;
+	private AddressStyle type;
 
-	public static final String BYRON = "BYRON";
-	public static final String SHELLEY = "SHELLEY";
 
 	public WalletTypeSelectionPanel() {
 	}
@@ -66,9 +65,9 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 
 	private void walletTypeUpdated(ActionEvent actionEvent) {
 		if (byron.isSelected()) {
-			type = BYRON;
+			type = AddressStyle.Byron;
 		} else if (shelley.isSelected()) {
-			type = SHELLEY;
+			type = AddressStyle.Shelley;
 		} else {
 			type = null;
 		}
@@ -97,7 +96,7 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 	}
 
 	@Override
-	protected String getValue() {
+	protected AddressStyle getValue() {
 		return type;
 	}
 

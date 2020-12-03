@@ -1,5 +1,6 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.labels.*;
 
@@ -108,16 +109,20 @@ public class SeedWordCountSelectionPanel extends WorkflowPanel {
 		return wordCount;
 	}
 
+	public AddressStyle getWalletType(){
+		return walletTypeSelectionPanel.getValue();
+	}
+
 	@Override
 	public void activate() {
-		String walletType = walletTypeSelectionPanel.getValue();
+		AddressStyle walletType = getWalletType();
 		seedWordCountPanel.removeAll();
 
-		if (SHELLEY.equals(walletType)) {
+		if (AddressStyle.Shelley.equals(walletType)) {
 			seedWordCountPanel.add(_24Words);
 			seedWordCountPanel.add(_15Words);
 
-		} else if (BYRON.equals(walletType)) {
+		} else if (AddressStyle.Byron.equals(walletType)) {
 			seedWordCountPanel.add(_12Words);
 			seedWordCountPanel.add(_15Words);
 			seedWordCountPanel.add(_27Words);
