@@ -6,15 +6,18 @@ import org.slf4j.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class WalletPasswordPanel extends WorkflowPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(WalletPasswordPanel.class);
 
 	private JPanel fieldsPanel;
-	private JPasswordField spendingPasswordTxt;
-	private JPasswordField passwordConfirmationTxt;
+	private SpendingPasswordField spendingPasswordTxt;
+	private SpendingPasswordField passwordConfirmationTxt;
+
 	private String error;
+	private JCheckBox showPasswordChk;
 
 	public WalletPasswordPanel() {
 
@@ -22,28 +25,45 @@ public class WalletPasswordPanel extends WorkflowPanel {
 
 	private JPanel getFieldsPanel() {
 		if (fieldsPanel == null) {
-			fieldsPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+			fieldsPanel = new JPanel(new GridLayout(3, 2, 5, 5));
 			fieldsPanel.add(new JLabel("Spending password"));
 			fieldsPanel.add(getSpendingPasswordTxt());
 
 			fieldsPanel.add(new JLabel("Confirmation"));
 			fieldsPanel.add(getPasswordConfirmationTxt());
+
+			fieldsPanel.add(new JPanel());
+			fieldsPanel.add(showPasswordChk = new JCheckBox("Display password"));
+			showPasswordChk.addItemListener(e -> {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					getSpendingPasswordTxt().displayPassword();
+					getPasswordConfirmationTxt().displayPassword();
+				} else {
+					getSpendingPasswordTxt().hidePassword();
+					getPasswordConfirmationTxt().hidePassword();
+				}
+			});
 		}
 		return fieldsPanel;
 	}
 
-	private JPasswordField getSpendingPasswordTxt() {
+	private SpendingPasswordField getSpendingPasswordTxt() {
 		if (spendingPasswordTxt == null) {
-			spendingPasswordTxt = new SpendingPasswordField();
+			spendingPasswordTxt = new SpendingPasswordField(this::validateOnInput);
 		}
 		return spendingPasswordTxt;
 	}
 
-	private JPasswordField getPasswordConfirmationTxt() {
+	private SpendingPasswordField getPasswordConfirmationTxt() {
 		if (passwordConfirmationTxt == null) {
-			passwordConfirmationTxt = new SpendingPasswordField();
+			passwordConfirmationTxt = new SpendingPasswordField(this::validateOnInput);
 		}
 		return passwordConfirmationTxt;
+	}
+
+	private void validateOnInput(String password){
+		getValue();
+		displayError();
 	}
 
 	@Override
