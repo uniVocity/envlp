@@ -1,6 +1,7 @@
 package com.univocity.envlp.ui.workflow;
 
 import com.univocity.envlp.ui.*;
+import com.univocity.envlp.ui.components.*;
 import org.slf4j.*;
 
 import javax.swing.*;
@@ -33,16 +34,14 @@ public class WalletPasswordPanel extends WorkflowPanel {
 
 	private JPasswordField getSpendingPasswordTxt() {
 		if (spendingPasswordTxt == null) {
-			spendingPasswordTxt = new JPasswordField();
-			spendingPasswordTxt.setColumns(20);
+			spendingPasswordTxt = new SpendingPasswordField();
 		}
 		return spendingPasswordTxt;
 	}
 
 	private JPasswordField getPasswordConfirmationTxt() {
 		if (passwordConfirmationTxt == null) {
-			passwordConfirmationTxt = new JPasswordField();
-			passwordConfirmationTxt.setColumns(20);
+			passwordConfirmationTxt = new SpendingPasswordField();
 		}
 		return passwordConfirmationTxt;
 	}

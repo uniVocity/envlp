@@ -5,6 +5,10 @@ import javax.swing.text.*;
 
 public class NoClipboardTextArea extends JTextArea {
 
+	{
+		setTransferHandler(null);
+	}
+
 	public NoClipboardTextArea() {
 	}
 
