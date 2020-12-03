@@ -39,7 +39,7 @@ abstract class WorkflowPanel extends JPanel {
 		errorLabel.setBackground(new Color(255, 255, 255, 0));
 	}
 
-	private void displayError() {
+	protected void displayError() {
 		errorLabel.setText(getInputErrorMessage());
 		errorLabel.setForeground(Color.RED);
 		errorLabel.setBackground(new Color(125, 0, 0, 125));

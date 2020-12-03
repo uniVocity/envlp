@@ -9,12 +9,15 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.function.*;
 
 public class SeedPhraseInput extends JTextArea {
 
 	private static final Logger log = LoggerFactory.getLogger(SeedPhraseInput.class);
 
 	private WordListPopup popupMenu;
+	private int expectedWordCount = -1;
+	private Consumer<InvalidMnemonicException> invalidMnemonicHandler;
 
 	public SeedPhraseInput(Collection<String> seedWords) {
 		super(4, 32);
@@ -28,7 +31,7 @@ public class SeedPhraseInput extends JTextArea {
 			public void keyTyped(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_SPACE || e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
 					if (popupMenu.insertSelection()) {
-						if(e.getKeyChar() != KeyEvent.VK_SPACE) {
+						if (e.getKeyChar() != KeyEvent.VK_SPACE) {
 							e.consume();
 						}
 						final int position = getCaretPosition();
@@ -41,6 +44,8 @@ public class SeedPhraseInput extends JTextArea {
 						});
 					}
 				}
+
+				SwingUtilities.invokeLater(() -> validateWords());
 			}
 
 			@Override
@@ -58,6 +63,17 @@ public class SeedPhraseInput extends JTextArea {
 				}
 			}
 		});
+	}
+
+	void validateWords() {
+		if(invalidMnemonicHandler != null) {
+			try {
+				Seed.toValidatedMnemonicList(getText(), expectedWordCount);
+				invalidMnemonicHandler.accept(null);
+			} catch (InvalidMnemonicException e) {
+				invalidMnemonicHandler.accept(e);
+			}
+		}
 	}
 
 	void insertString(int offset, String str) {
@@ -104,6 +120,18 @@ public class SeedPhraseInput extends JTextArea {
 		popupMenu.show(position, wordFragment, location);
 
 		SwingUtilities.invokeLater(this::requestFocusInWindow);
+	}
+
+	public void setExpectedWordCount(int wordCount) {
+		this.expectedWordCount = wordCount;
+	}
+
+	public int getExpectedWordCount() {
+		return expectedWordCount;
+	}
+
+	public void setInvalidMnemonicHandler(Consumer<InvalidMnemonicException> invalidMnemonicHandler) {
+		this.invalidMnemonicHandler = invalidMnemonicHandler;
 	}
 
 	public static void main(String[] args) {

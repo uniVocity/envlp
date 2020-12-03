@@ -65,6 +65,7 @@ public class WordListPopup extends JPopupMenu {
 			String selectedSuggestion = list.getSelectedItem().substring(wordFragment.length());
 			textComponent.insertString(insertionPosition, selectedSuggestion);
 			setVisible(false);
+			textComponent.validateWords();
 			return true;
 		}
 		return false;

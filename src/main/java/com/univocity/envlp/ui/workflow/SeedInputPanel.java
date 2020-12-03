@@ -91,9 +91,10 @@ public class SeedInputPanel extends WorkflowPanel {
 			error = "Seed phrase cannot be blank";
 			return null;
 		} else {
-			String[] words = seed.split(" ");
-			if (words.length != getWordCount()) {
-				error = "Seed phrase must have " + getWordCount() + " words instead of " + words.length;
+			try {
+				Seed.toValidatedMnemonicList(getSeedTextArea().getText(), getWordCount());
+			} catch (InvalidMnemonicException e) {
+				error = e.getMessage();
 				return null;
 			}
 
@@ -112,6 +113,15 @@ public class SeedInputPanel extends WorkflowPanel {
 
 	@Override
 	public void activate() {
+		getSeedTextArea().setExpectedWordCount(getWordCount());
+		getSeedTextArea().setInvalidMnemonicHandler(e -> {
+			if (e == null) {
+				error = "";
+			} else {
+				error = e.getMessage();
+			}
+			displayError();
+		});
 		setDetails(getDetails());
 		updateLabel();
 		clear();
