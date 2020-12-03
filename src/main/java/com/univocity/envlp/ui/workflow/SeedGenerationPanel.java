@@ -1,6 +1,8 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.cardano.wallet.common.*;
 import com.univocity.envlp.ui.*;
+import com.univocity.envlp.ui.components.*;
 import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.wallet.*;
 
@@ -16,8 +18,8 @@ public class SeedGenerationPanel extends WorkflowPanel {
 
 	}
 
-	private JPanel getSeedPanel(){
-		if(seedPanel == null){
+	private JPanel getSeedPanel() {
+		if (seedPanel == null) {
 			seedPanel = new JPanel(new BorderLayout(0, 10));
 			seedPanel.add(new SubtitleLabel("This is your 24 words seed phrase:"), BorderLayout.NORTH);
 			seedPanel.add(getSeedTextArea(), BorderLayout.CENTER);
@@ -27,7 +29,7 @@ public class SeedGenerationPanel extends WorkflowPanel {
 
 	private JTextArea getSeedTextArea() {
 		if (seedTextArea == null) {
-			seedTextArea = new JTextArea(4, 12);
+			seedTextArea = new NoClipboardTextArea(4, 12);
 			seedTextArea.setEditable(false);
 			seedTextArea.setWrapStyleWord(true);
 			seedTextArea.setAutoscrolls(false);
@@ -74,8 +76,8 @@ public class SeedGenerationPanel extends WorkflowPanel {
 	}
 
 	@Override
-	protected Object getValue() {
-		return getSeedTextArea().getText();
+	protected String getValue() {
+		return Seed.cleanSeedPhrase(getSeedTextArea().getText());
 	}
 
 	@Override

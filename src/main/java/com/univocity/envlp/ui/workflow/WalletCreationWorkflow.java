@@ -1,12 +1,10 @@
 package com.univocity.envlp.ui.workflow;
 
-import com.univocity.cardano.wallet.builders.wallets.*;
 import com.univocity.cardano.wallet.common.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.utils.Utils;
 import com.univocity.envlp.wallet.*;
-import com.univocity.envlp.wallet.Wallet;
 import org.apache.commons.lang3.*;
 
 import javax.swing.*;
@@ -22,13 +20,15 @@ public class WalletCreationWorkflow extends JPanel {
 	private String[] STEPS = new String[0];
 
 	private static final String WALLET_DETAILS = "WALLET_DETAILS";
+	private static final String SPENDING_PASSWORD = "SPENDING_PASSWORD";
 	private static final String WALLET_TYPE = "WALLET_TYPE";
 	private static final String WORD_COUNT = "WORD_COUNT";
 	private static final String GENERATE_SEED = "GENERATE_SEED";
 	private static final String INPUT_SEED = "INPUT_SEED";
+	private static final String CONFIRM_SEED = "CONFIRM_SEED";
 
-	private static final String[] RESTORE_STEPS = {WALLET_TYPE, WORD_COUNT, WALLET_DETAILS, INPUT_SEED};
-	private static final String[] CREATE_STEPS = {WALLET_DETAILS, GENERATE_SEED};
+	private static final String[] RESTORE_STEPS = {WALLET_TYPE, WORD_COUNT, INPUT_SEED, WALLET_DETAILS, SPENDING_PASSWORD};
+	private static final String[] CREATE_STEPS = {WALLET_DETAILS, SPENDING_PASSWORD, GENERATE_SEED, CONFIRM_SEED};
 
 	private JPanel cardPanel;
 	private JPanel restoreOrCreatePanel;
@@ -42,6 +42,7 @@ public class WalletCreationWorkflow extends JPanel {
 	private final Consumer<Wallet> workflowEndAction;
 	private final BiConsumer<String, String> workflowStepDescription;
 	private WalletSetupPanel walletSetupPanel;
+	private WalletPasswordPanel walletPasswordPanel;
 	private SeedGenerationPanel seedGenerationPanel;
 	private WalletTypeSelectionPanel walletTypeSelectionPanel;
 	private SeedWordCountSelectionPanel wordCountSelectionPanel;
@@ -65,10 +66,13 @@ public class WalletCreationWorkflow extends JPanel {
 			cardPanel.add(getRestoreOrCreatePanel(), RESTORE_OR_CREATE);
 
 			panels.put(WALLET_DETAILS, walletSetupPanel = new WalletSetupPanel());
+			panels.put(SPENDING_PASSWORD, walletPasswordPanel = new WalletPasswordPanel());
 			panels.put(GENERATE_SEED, seedGenerationPanel = new SeedGenerationPanel());
 			panels.put(WALLET_TYPE, walletTypeSelectionPanel = new WalletTypeSelectionPanel());
 			panels.put(WORD_COUNT, wordCountSelectionPanel = new SeedWordCountSelectionPanel(walletTypeSelectionPanel));
 			panels.put(INPUT_SEED, seedInputPanel = new SeedInputPanel(wordCountSelectionPanel));
+			panels.put(CONFIRM_SEED, seedInputPanel = new SeedConfirmationPanel(seedGenerationPanel));
+
 
 			for (Map.Entry<String, WorkflowPanel> e : panels.entrySet()) {
 				cardPanel.add(e.getValue(), e.getKey());
@@ -101,7 +105,7 @@ public class WalletCreationWorkflow extends JPanel {
 
 	public JButton getBtCreateNewWallet() {
 		if (btCreateNewWallet == null) {
-			btCreateNewWallet = newActionButton("images/create-ic.inline.png","Create new wallet", "Generate a 24 words seed phrase to create a new wallet");
+			btCreateNewWallet = newActionButton("images/create-ic.inline.png", "Create new wallet", "Generate a 24 words seed phrase to create a new wallet");
 			btCreateNewWallet.addActionListener(e -> beginWalletCreation());
 		}
 		return btCreateNewWallet;
@@ -109,7 +113,7 @@ public class WalletCreationWorkflow extends JPanel {
 
 	public JButton getBtRestoreWallet() {
 		if (btRestoreWallet == null) {
-			btRestoreWallet = newActionButton("images/restore-ic.inline.png","Restore wallet", "Restore an existing wallet using your seed phrase");
+			btRestoreWallet = newActionButton("images/restore-ic.inline.png", "Restore wallet", "Restore an existing wallet using your seed phrase");
 			btRestoreWallet.addActionListener(e -> beginWalletRestoration());
 		}
 		return btRestoreWallet;
@@ -139,7 +143,7 @@ public class WalletCreationWorkflow extends JPanel {
 		c.anchor = GridBagConstraints.CENTER;
 		c.fill = GridBagConstraints.BOTH;
 
-		JLabel icon = new JLabel(Utils.getImageIcon(iconPath, 50,50), JLabel.CENTER);
+		JLabel icon = new JLabel(Utils.getImageIcon(iconPath, 50, 50), JLabel.CENTER);
 		out.add(icon, c);
 
 		c.insets = new Insets(10, 25, 10, 25);

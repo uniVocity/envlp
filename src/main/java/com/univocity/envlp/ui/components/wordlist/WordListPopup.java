@@ -1,5 +1,7 @@
 package com.univocity.envlp.ui.components.wordlist;
 
+import com.github.weisj.darklaf.components.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,7 +26,7 @@ public class WordListPopup extends JPopupMenu {
 		setBorder(null);
 		setPreferredSize(new Dimension(150, 200));
 
-		JScrollPane scroll = new JScrollPane(list);
+		OverlayScrollPane scroll = new OverlayScrollPane(new JScrollPane(list));
 		scroll.setBorder(null);
 		add(scroll, BorderLayout.CENTER);
 

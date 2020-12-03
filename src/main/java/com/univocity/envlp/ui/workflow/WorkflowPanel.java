@@ -80,7 +80,7 @@ abstract class WorkflowPanel extends JPanel {
 
 			JPanel p = new JPanel(new BorderLayout());
 			if (!getDetails().isEmpty()) {
-				p.add(getDetailsPanelScroll(), BorderLayout.CENTER);
+				p.add(new OverlayScrollPane(getDetailsPanelScroll()), BorderLayout.CENTER);
 				p.setBorder(BorderFactory.createLoweredBevelBorder());
 			}
 

@@ -13,7 +13,7 @@ public class SeedInputPanel extends WorkflowPanel {
 
 	private JPanel seedPanel;
 	private SeedPhraseInput seedTextArea;
-	private String error;
+	protected String error;
 	private final SeedWordCountSelectionPanel wordCountSelectionPanel;
 
 	private SubtitleLabel subtitleLabel;
@@ -84,7 +84,7 @@ public class SeedInputPanel extends WorkflowPanel {
 	}
 
 	@Override
-	protected Object getValue() {
+	protected String getValue() {
 		error = null;
 		String seed = Seed.cleanSeedPhrase(getSeedTextArea().getText());
 		if (seed.isEmpty()) {
@@ -99,7 +99,7 @@ public class SeedInputPanel extends WorkflowPanel {
 			}
 
 			AddressManager addressManager = new WalletService().getAddressManager();
-			addressManager.setStyle(wordCountSelectionPanel.getWalletType());
+			addressManager.setStyle(wordCountSelectionPanel == null ? AddressStyle.Shelley : wordCountSelectionPanel.getWalletType());
 
 			String privateKey = addressManager.generatePrivateKey(seed);
 			if (privateKey == null) {

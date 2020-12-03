@@ -2,6 +2,7 @@ package com.univocity.envlp.ui.components.wordlist;
 
 import com.univocity.cardano.wallet.common.*;
 import com.univocity.envlp.ui.*;
+import com.univocity.envlp.ui.components.*;
 import org.slf4j.*;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.function.*;
 
-public class SeedPhraseInput extends JTextArea {
+public class SeedPhraseInput extends NoClipboardTextArea {
 
 	private static final Logger log = LoggerFactory.getLogger(SeedPhraseInput.class);
 
