@@ -108,8 +108,6 @@ public class WalletTypeSelectionPanel extends WorkflowPanel {
 
 	@Override
 	protected void clearFields() {
-		byron.setSelected(false);
-		shelley.setSelected(false);
 		none.setSelected(true);
 		type = null;
 	}

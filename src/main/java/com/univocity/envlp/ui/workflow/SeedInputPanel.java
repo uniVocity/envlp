@@ -1,8 +1,8 @@
 package com.univocity.envlp.ui.workflow;
 
 import com.univocity.cardano.wallet.common.*;
-import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.labels.*;
+import com.univocity.envlp.ui.components.wordlist.*;
 import com.univocity.envlp.wallet.*;
 
 import javax.swing.*;
@@ -11,28 +11,40 @@ import java.awt.*;
 public class SeedInputPanel extends WorkflowPanel {
 
 	private JPanel seedPanel;
-	private JTextArea seedTextArea;
+	private SeedPhraseInput seedTextArea;
 	private String error;
+	private final SeedWordCountSelectionPanel wordCountSelectionPanel;
 
-	public SeedInputPanel() {
+	private SubtitleLabel subtitleLabel;
 
+	public SeedInputPanel(SeedWordCountSelectionPanel wordCountSelectionPanel) {
+		this.wordCountSelectionPanel = wordCountSelectionPanel;
 	}
 
 	private JPanel getSeedPanel() {
 		if (seedPanel == null) {
 			seedPanel = new JPanel(new BorderLayout(0, 10));
-			seedPanel.add(new SubtitleLabel("Please type in your 24 words seed phrase:"), BorderLayout.NORTH);
+
+			seedPanel.add(updateLabel(), BorderLayout.NORTH);
 			seedPanel.add(getSeedTextArea(), BorderLayout.CENTER);
 		}
 		return seedPanel;
 	}
 
-	private JTextArea getSeedTextArea() {
+	private SubtitleLabel updateLabel() {
+		String msg = "Please type in your " + getWordCount() + " words seed phrase:";
+		if (subtitleLabel == null) {
+			subtitleLabel = new SubtitleLabel(msg);
+		} else {
+			subtitleLabel.setText(msg);
+		}
+		return subtitleLabel;
+
+	}
+
+	private SeedPhraseInput getSeedTextArea() {
 		if (seedTextArea == null) {
-			seedTextArea = new JTextArea(4, 12);
-			seedTextArea.setWrapStyleWord(true);
-			seedTextArea.setLineWrap(true);
-			seedTextArea.setAutoscrolls(false);
+			seedTextArea = new SeedPhraseInput(Seed.englishMnemonicWords());
 		}
 		return seedTextArea;
 	}
@@ -54,9 +66,20 @@ public class SeedInputPanel extends WorkflowPanel {
 
 	@Override
 	protected String getDetails() {
-		return "<p>&#8226 Please provide your <b>24 words</b> seed phrase to proceed.</p>" +
+		return "<p>&#8226 Please provide your <b>" + getWordCount() + " words</b> seed phrase to proceed.</p>" +
 				"<p>&#8226 An incorrect seed may cause you to restore the <b>wrong</b> wallet.</p>" +
 				"<p>&#8226 Ensure <b>only you</b> have access to this phrase before<br>continuing. It won't be stored anywhere.</p>";
+	}
+
+	private int getWordCount() {
+		Integer count = null;
+		if (wordCountSelectionPanel != null) {
+			count = wordCountSelectionPanel.getValue();
+		}
+		if (count == null) {
+			return 24;
+		}
+		return count;
 	}
 
 	@Override
@@ -68,8 +91,8 @@ public class SeedInputPanel extends WorkflowPanel {
 			return null;
 		} else {
 			String[] words = seed.split(" ");
-			if (words.length != 24) {
-				error = "Seed phrase must have 24 words instead of " + words.length;
+			if (words.length != getWordCount()) {
+				error = "Seed phrase must have " + getWordCount() + " words instead of " + words.length;
 				return null;
 			}
 
@@ -85,6 +108,8 @@ public class SeedInputPanel extends WorkflowPanel {
 
 	@Override
 	public void activate() {
+		setDetails(getDetails());
+		updateLabel();
 		clear();
 	}
 
@@ -93,7 +118,4 @@ public class SeedInputPanel extends WorkflowPanel {
 		getSeedTextArea().setText("");
 	}
 
-	public static void main(String... args) {
-		WindowUtils.launchTestWindow(new SeedInputPanel());
-	}
 }

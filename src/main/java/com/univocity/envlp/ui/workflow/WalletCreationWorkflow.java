@@ -68,7 +68,7 @@ public class WalletCreationWorkflow extends JPanel {
 			panels.put(GENERATE_SEED, seedGenerationPanel = new SeedGenerationPanel());
 			panels.put(WALLET_TYPE, walletTypeSelectionPanel = new WalletTypeSelectionPanel());
 			panels.put(WORD_COUNT, wordCountSelectionPanel = new SeedWordCountSelectionPanel(walletTypeSelectionPanel));
-			panels.put(INPUT_SEED, seedInputPanel = new SeedInputPanel());
+			panels.put(INPUT_SEED, seedInputPanel = new SeedInputPanel(wordCountSelectionPanel));
 
 			for (Map.Entry<String, WorkflowPanel> e : panels.entrySet()) {
 				cardPanel.add(e.getValue(), e.getKey());
