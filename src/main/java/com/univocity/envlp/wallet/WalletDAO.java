@@ -1,5 +1,6 @@
 package com.univocity.envlp.wallet;
 
+import com.univocity.cardano.wallet.builders.wallets.*;
 import com.univocity.envlp.database.*;
 import com.univocity.envlp.utils.*;
 import org.slf4j.*;
@@ -8,21 +9,22 @@ import org.springframework.jdbc.core.*;
 import java.sql.*;
 import java.util.*;
 
-public class WalletDAO {
+class WalletDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(WalletDAO.class);
 
-	private static final RowMapper<Wallet> walletMapper = (rs, rowNum) -> {
-		Wallet out = new Wallet();
+	private static final RowMapper<ColdWallet> walletMapper = (rs, rowNum) -> {
+		ColdWallet out = new ColdWallet();
 		out.setId(rs.getLong("id"));
 		out.setName(rs.getString("name"));
+		out.setHotWalletId(rs.getString("hot_wallet_id"));
 		out.setCreatedAt(Utils.toLocalDateTime(rs.getTimestamp("created_at")));
 		return out;
 	};
 
 	private AddressAllocationDAO addressAllocationDAO = new AddressAllocationDAO();
 
-	public Wallet persistWallet(Wallet wallet) {
+	public ColdWallet persistWallet(ColdWallet wallet) {
 		if (wallet.accounts.isEmpty()) {
 			throw new IllegalStateException("Can't persist wallet without accounts");
 		}
@@ -56,17 +58,17 @@ public class WalletDAO {
 		return wallet;
 	}
 
-	public Wallet loadWallet(long walletId) {
-		Wallet out = Database.get().queryForOptionalObject("SELECT * FROM wallet WHERE id = ?", walletMapper, walletId);
+	public ColdWallet loadWallet(long walletId) {
+		ColdWallet out = Database.get().queryForOptionalObject("SELECT * FROM wallet WHERE id = ?", walletMapper, walletId);
 		loadAccounts(out);
 		return out;
 	}
 
-	public List<Wallet> loadWallets() {
-		Map<Long, Wallet> wallets = new TreeMap<>();
+	public List<ColdWallet> loadWallets() {
+		Map<Long, ColdWallet> wallets = new TreeMap<>();
 		Database.get().query("SELECT w.id, w.name, w.created_at, a.account_idx, a.public_root_key FROM wallet w JOIN wallet_account a ON w.id = a.wallet_id", (RowCallbackHandler) rs -> {
 			Long walletId = rs.getLong("id");
-			Wallet wallet = wallets.computeIfAbsent(walletId, k -> {
+			ColdWallet wallet = wallets.computeIfAbsent(walletId, k -> {
 				try {
 					return walletMapper.mapRow(rs, 0);
 				} catch (SQLException e) {
@@ -82,7 +84,7 @@ public class WalletDAO {
 		return new ArrayList<>(wallets.values());
 	}
 
-	private void loadAccounts(Wallet wallet) {
+	private void loadAccounts(ColdWallet wallet) {
 		if (wallet == null) {
 			return;
 		}
@@ -99,16 +101,21 @@ public class WalletDAO {
 		return Database.get().update("DELETE FROM wallet WHERE id = ?", walletId) == 1;
 	}
 
-	public boolean deleteWallet(Wallet wallet) {
+	public boolean deleteWallet(ColdWallet wallet) {
 		if (wallet == null) {
 			return false;
 		}
 		return deleteWallet(wallet.getId());
 	}
 
-	public Wallet getWalletByName(String walletName) {
-		Wallet out = Database.get().queryForOptionalObject("SELECT * FROM wallet WHERE name = ?", walletMapper, walletName);
+	public ColdWallet getWalletByName(String walletName) {
+		ColdWallet out = Database.get().queryForOptionalObject("SELECT * FROM wallet WHERE name = ?", walletMapper, walletName);
 		loadAccounts(out);
 		return out;
+	}
+
+	public void associateHotWallet(ColdWallet cold, Wallet hot) {
+		cold.setHotWalletId(hot.id());
+		Database.get().update("UPDATE wallet_account SET hot_wallet_id = ? WHERE wallet_id = ?", new Object[]{hot.id(), cold.getId()});
 	}
 }

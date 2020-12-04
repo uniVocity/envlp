@@ -8,9 +8,9 @@ import javax.swing.*;
 
 public class WalletDetailsPanel extends JTabbedPane {
 
-	private WalletService walletService;
+	private ColdWalletService walletService;
 
-	private Wallet wallet;
+	private ColdWallet wallet;
 
 	private ReceivingPanel receivingPanel;
 	private PublicRootKeysPanel publicRootKeysPanel;
@@ -34,14 +34,14 @@ public class WalletDetailsPanel extends JTabbedPane {
 		repaint();
 	}
 
-	private WalletService getWalletService() {
+	private ColdWalletService getWalletService() {
 		if (walletService == null) {
-			walletService = new WalletService();
+			walletService = new ColdWalletService();
 		}
 		return walletService;
 	}
 
-	public void setWallet(Wallet wallet) {
+	public void setWallet(ColdWallet wallet) {
 		this.wallet = wallet;
 		getReceivingPanel().setWallet(wallet);
 		getPublicRootKeysPanel().setWallet(wallet);

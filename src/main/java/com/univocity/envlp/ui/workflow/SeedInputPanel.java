@@ -98,7 +98,7 @@ public class SeedInputPanel extends WorkflowPanel {
 				return null;
 			}
 
-			AddressManager addressManager = new WalletService().getAddressManager();
+			AddressManager addressManager = new ColdWalletService().getAddressManager();
 			addressManager.setStyle(wordCountSelectionPanel == null ? AddressStyle.Shelley : wordCountSelectionPanel.getWalletType());
 
 			String privateKey = addressManager.generatePrivateKey(seed);

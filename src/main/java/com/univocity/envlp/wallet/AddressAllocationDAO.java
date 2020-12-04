@@ -25,7 +25,7 @@ public class AddressAllocationDAO {
 		return out;
 	};
 
-	public void createDefaultAllocations(Wallet wallet) {
+	public void createDefaultAllocations(ColdWallet wallet) {
 		List<Long> missingAccounts = Database.get().queryForList("SELECT account_idx FROM wallet_account WHERE wallet_id = ? AND account_idx NOT IN (SELECT account_idx FROM address_allocation WHERE wallet_id = ?)", Long.class, wallet.getId(), wallet.getId());
 		if (!missingAccounts.isEmpty()) {
 			List<Object[]> batch = new ArrayList<>();
@@ -34,7 +34,7 @@ public class AddressAllocationDAO {
 		}
 	}
 
-	public AddressAllocation allocateNextAccount(Wallet wallet) {
+	public AddressAllocation allocateNextAccount(ColdWallet wallet) {
 		return allocateNextAddress(wallet, -1L);
 	}
 
@@ -44,7 +44,7 @@ public class AddressAllocationDAO {
 		}
 	}
 
-	public AddressAllocation allocateNextAddress(Wallet wallet, long accountIndex) {
+	public AddressAllocation allocateNextAddress(ColdWallet wallet, long accountIndex) {
 		String query;
 
 		if (accountIndex < 0) { //get allocation from account with smallest derivation index first
@@ -78,7 +78,7 @@ public class AddressAllocationDAO {
 		return allocation;
 	}
 
-	public List<AddressAllocation> getAddresses(Wallet wallet, long accountIndex) {
+	public List<AddressAllocation> getAddresses(ColdWallet wallet, long accountIndex) {
 		String query;
 		if (accountIndex < 0) { //get allocations from all accounts that are not the default 0 account
 			query = "SELECT * FROM address_allocation WHERE wallet_id = ? AND account_idx <> 0 AND payment_address IS NOT NULL ORDER BY derivation_idx DESC, account_idx";

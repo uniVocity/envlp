@@ -11,6 +11,7 @@ import com.univocity.envlp.ui.components.*;
 import com.univocity.envlp.ui.wallet.management.*;
 import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.*;
+import okhttp3.*;
 import org.slf4j.*;
 
 import javax.swing.*;
@@ -73,17 +74,17 @@ public class Main {
 	private JTabbedPane applicationTabs = new JTabbedPane();
 
 	private final LogPanel applicationLogPanel = new LogPanel();
-	final ProcessControlPanel cardanoNodeControlPanel;
-	final ProcessControlPanel cardanoWalletControlPanel;
+	ProcessControlPanel cardanoNodeControlPanel;
+	ProcessControlPanel cardanoWalletControlPanel;
 
 	private WalletManagementPanel walletPanel;
 	private JPanel themeSettingsPanel;
-	private WalletDAO walletDAO;
 
 	private static Main instance;
 	private static boolean running = false;
 	private RemoteWalletServer walletServer;
 	private EpochDetailsPanel epochDetailsPanel;
+	private WalletService walletService;
 
 	private Main() {
 		frame = new JFrame();
@@ -99,38 +100,51 @@ public class Main {
 		if (image != null) {
 			frame.setIconImage(image);
 		}
-
 		openWalletsTab();
-
-		Configuration config = Configuration.getInstance();
-
-		int port = config.getCardanoNodePort();
-		if (port == -1) {
-			walletServer = WalletServer.remote("localhost").connectToPort(config.getWalletServicePort());
-			cardanoNodeControlPanel = null;
-			cardanoWalletControlPanel = null;
-		} else {
-			EmbeddedWalletServer wallet = WalletServer.embedded()
-					.binariesIn(config.getCardanoToolsDirPath())
-					.mainnetNode()
-					.configuration(config.getNodeConfigurationFilePath())
-					.topology(config.getTopologyFilePath())
-					.storeBlockchainIn(config.getBlockchainDirPath())
-					.port(config.getCardanoNodePort())
-					.ignoreOutput()
-					.wallet()
-					//.enableHttps()
-					.port(config.getWalletServicePort())
-					.ignoreOutput();
-
-			cardanoNodeControlPanel = intializeProcess(wallet.getNodeManager());
-			cardanoWalletControlPanel = intializeProcess(wallet.getWalletManager());
-			walletServer = wallet;
-		}
-
 		frame.setJMenuBar(new MainMenu(this));
-
 		frame.add(getEpochDetailsPanel(), BorderLayout.SOUTH);
+	}
+
+	private RemoteWalletServer getWalletServer() {
+		if (walletServer == null) {
+			Configuration config = Configuration.getInstance();
+
+			int port = config.getCardanoNodePort();
+			if (port == -1) {
+				walletServer = WalletServer.remote("localhost").connectToPort(config.getWalletServicePort());
+				cardanoNodeControlPanel = null;
+				cardanoWalletControlPanel = null;
+			} else {
+				EmbeddedWalletServer server = WalletServer.embedded()
+						.binariesIn(config.getCardanoToolsDirPath())
+						.mainnetNode()
+						.configuration(config.getNodeConfigurationFilePath())
+						.topology(config.getTopologyFilePath())
+						.storeBlockchainIn(config.getBlockchainDirPath())
+						.port(config.getCardanoNodePort())
+						.ignoreOutput()
+						.wallet()
+						.enableHttps()
+						.port(config.getWalletServicePort())
+						.ignoreOutput();
+
+				cardanoNodeControlPanel = intializeProcess(server.getNodeManager());
+				cardanoWalletControlPanel = intializeProcess(server.getWalletManager());
+				walletServer = server;
+
+				server.start();
+				log.info("Network clock details: " + walletServer.network().clock());
+			}
+
+		}
+		return walletServer;
+	}
+
+	private WalletService getWalletService() {
+		if (walletService == null) {
+			this.walletService = new WalletService(getWalletServer());
+		}
+		return walletService;
 	}
 
 	private ProcessControlPanel intializeProcess(ProcessManager process) {
@@ -177,17 +191,10 @@ public class Main {
 		return themeSettingsPanel;
 	}
 
-	private WalletDAO getWalletDAO() {
-		if (walletDAO == null) {
-			walletDAO = new WalletDAO();
-		}
-		return walletDAO;
-	}
-
 	WalletManagementPanel getWalletPanel() {
 		if (walletPanel == null) {
 			walletPanel = new WalletManagementPanel();
-			getWalletDAO().loadWallets().forEach(wallet -> walletPanel.getWalletList().addWallet(wallet, false));
+			getWalletService().loadWallets().forEach(wallet -> walletPanel.getWalletList().addWallet(wallet, false));
 		}
 		return walletPanel;
 	}
@@ -220,9 +227,9 @@ public class Main {
 		return applicationLogPanel;
 	}
 
-	public EpochDetailsPanel getEpochDetailsPanel(){
-		if(epochDetailsPanel == null){
-			epochDetailsPanel = new EpochDetailsPanel(walletServer);
+	public EpochDetailsPanel getEpochDetailsPanel() {
+		if (epochDetailsPanel == null) {
+			epochDetailsPanel = new EpochDetailsPanel(getWalletServer());
 		}
 		return epochDetailsPanel;
 	}

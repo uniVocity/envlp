@@ -47,7 +47,7 @@ public class PublicRootKeysPanel extends JPanel {
 		return rootKeyTableModel;
 	}
 
-	public void setWallet(Wallet wallet) {
+	public void setWallet(ColdWallet wallet) {
 		while (getRootKeyTableModel().getRowCount() > 0) {
 			getRootKeyTableModel().removeRow(0);
 		}
@@ -60,9 +60,9 @@ public class PublicRootKeysPanel extends JPanel {
 	public static void main(String... args) {
 		Database.initTest();
 
-		WalletService service = new WalletService();
+		ColdWalletService service = new ColdWalletService();
 		String seed = service.generateSeed();
-		Wallet wallet = service.createNewWallet("test", seed);
+		ColdWallet wallet = service.createNewWallet("test", seed);
 
 		service.addAccountFromSeed(wallet, seed, 1);
 		service.addAccountFromSeed(wallet, seed, 2);

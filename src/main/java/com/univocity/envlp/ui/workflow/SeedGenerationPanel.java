@@ -38,7 +38,7 @@ public class SeedGenerationPanel extends WorkflowPanel {
 	}
 
 	private void generateSeedPhrase() {
-		String seed = new WalletService().getAddressManager().generateSeed();
+		String seed = new ColdWalletService().getAddressManager().generateSeed();
 		String[] words = seed.split(" ");
 
 		StringBuilder tmp = new StringBuilder();

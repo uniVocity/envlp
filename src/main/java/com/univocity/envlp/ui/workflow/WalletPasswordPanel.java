@@ -61,7 +61,7 @@ public class WalletPasswordPanel extends WorkflowPanel {
 		return passwordConfirmationTxt;
 	}
 
-	private void validateOnInput(String password){
+	private void validateOnInput(String password) {
 		getValue();
 		displayError();
 	}
@@ -111,12 +111,16 @@ public class WalletPasswordPanel extends WorkflowPanel {
 		error = null;
 		String spendingPassword = new String(getSpendingPasswordTxt().getPassword());
 		if (spendingPassword.length() < 10) {
-			error = "Spending password is too short (" + spendingPassword.length() + " characters)";
+			error = "Spending password is too short (" + spendingPassword.length() + " characters, expecting at least 10)";
 			return null;
 		} else {
 			String confirmation = new String(getPasswordConfirmationTxt().getPassword());
 			if (confirmation.length() < 10) {
 				error = "Confirmation password is too short (" + confirmation.length() + " characters)";
+				return null;
+			}
+			if (confirmation.length() > spendingPassword.length()) {
+				error = "Confirmation password is too long (" + confirmation.length() + " characters, expecting " + confirmation.length() + ")";
 				return null;
 			}
 			if (!spendingPassword.equals(confirmation)) {

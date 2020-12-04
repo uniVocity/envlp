@@ -5,19 +5,20 @@ import org.apache.commons.lang3.*;
 import java.time.*;
 import java.util.*;
 
-public class Wallet {
+public class ColdWallet {
 
 	private Long id;
 	private String name;
 	private LocalDateTime createdAt;
+	private String hotWalletId;
 
 	final Map<Long, String> accounts = new TreeMap<>();
 
-	Wallet() {
+	ColdWallet() {
 
 	}
 
-	public Wallet(String name) {
+	public ColdWallet(String name) {
 		if (StringUtils.isBlank(name)) {
 			throw new IllegalArgumentException("Wallet name cannot be null/blank");
 		}
@@ -62,4 +63,15 @@ public class Wallet {
 		return new ArrayList<>(accounts.values());
 	}
 
+	public String getHotWalletId() {
+		return hotWalletId;
+	}
+
+	public void setHotWalletId(String hotWalletId) {
+		this.hotWalletId = hotWalletId;
+	}
+
+	public boolean canBeHot() {
+		return StringUtils.isNotBlank(hotWalletId);
+	}
 }

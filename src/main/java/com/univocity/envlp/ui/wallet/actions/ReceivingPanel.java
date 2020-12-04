@@ -17,18 +17,18 @@ import java.util.function.*;
 
 public class ReceivingPanel extends JPanel {
 
-	private final WalletService walletService;
+	private final ColdWalletService walletService;
 	private AutoAdjustingTable addressTable;
 	private ReadOnlyTableModel addressTableModel;
 	private JScrollPane addressTableScroll;
 	private List<Consumer<String>> addressSelectionListeners = new ArrayList<>();
 	private boolean selectionIsAdjusting = false;
 	private LinkLabel addAddressLink;
-	private Wallet wallet;
+	private ColdWallet wallet;
 
 	private JPanel commandsPanel;
 
-	public ReceivingPanel(WalletService walletService) {
+	public ReceivingPanel(ColdWalletService walletService) {
 		super(new BorderLayout());
 		this.add(getCommandsPanel(), BorderLayout.NORTH);
 		this.add(new OverlayScrollPane(getAddressTableScroll()), BorderLayout.CENTER);
@@ -97,7 +97,7 @@ public class ReceivingPanel extends JPanel {
 		return addressTableModel;
 	}
 
-	public void setWallet(Wallet wallet) {
+	public void setWallet(ColdWallet wallet) {
 		this.wallet = wallet;
 		getAddAddressLink().setEnabled(wallet != null);
 		selectionIsAdjusting = true;
@@ -149,15 +149,15 @@ public class ReceivingPanel extends JPanel {
 	public static void main(String... args) {
 		Database.initTest();
 
-		WalletService service = new WalletService();
+		ColdWalletService service = new ColdWalletService();
 		String seed = service.generateSeed();
-		Wallet wallet = service.createNewWallet("test", seed);
+		ColdWallet wallet = service.createNewWallet("test", seed);
 
 		service.allocateNextPaymentAddress(wallet);
 		service.allocateNextPaymentAddress(wallet);
 		service.allocateNextPaymentAddress(wallet);
 
-		ReceivingPanel panel = new ReceivingPanel(new WalletService());
+		ReceivingPanel panel = new ReceivingPanel(new ColdWalletService());
 		panel.setWallet(wallet);
 
 		WindowUtils.launchTestWindow(panel);

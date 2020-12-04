@@ -15,8 +15,8 @@ public class WalletDAOTest {
 
 	private WalletDAO walletDAO = new WalletDAO();
 
-	private Wallet newWallet(String name) {
-		Wallet out = new Wallet(name);
+	private ColdWallet newWallet(String name) {
+		ColdWallet out = new ColdWallet(name);
 		out.addPublicRootKey(0, name + "_1");
 		out.addPublicRootKey(1, name + "_2");
 		out.addPublicRootKey(2, name + "_3");
@@ -25,17 +25,17 @@ public class WalletDAOTest {
 
 	@Test
 	public void testPersistWallet() {
-		Wallet wallet1 = walletDAO.persistWallet(newWallet("wallet1"));
+		ColdWallet wallet1 = walletDAO.persistWallet(newWallet("wallet1"));
 		checkWallet(wallet1, 1, "wallet1", 3);
 
-		Wallet wallet2 = walletDAO.persistWallet(newWallet("wallet2"));
+		ColdWallet wallet2 = walletDAO.persistWallet(newWallet("wallet2"));
 		checkWallet(wallet2, 2, "wallet2", 3);
 
-		Wallet wallet3 = walletDAO.persistWallet(newWallet("wallet3"));
+		ColdWallet wallet3 = walletDAO.persistWallet(newWallet("wallet3"));
 		checkWallet(wallet3, 3, "wallet3", 3);
 	}
 
-	private void checkWallet(Wallet wallet, long id, String name, int accounts) {
+	private void checkWallet(ColdWallet wallet, long id, String name, int accounts) {
 		assertEquals(wallet.getId().longValue(), id);
 		assertEquals(wallet.getName(), name);
 		assertEquals(wallet.accounts.size(), accounts);
@@ -56,7 +56,7 @@ public class WalletDAOTest {
 
 	@Test(dependsOnMethods = "testLoadWallet")
 	public void testLoadWallets() {
-		List<Wallet> wallets = walletDAO.loadWallets();
+		List<ColdWallet> wallets = walletDAO.loadWallets();
 		assertEquals(wallets.size(), 3);
 		checkWallet(wallets.get(0), 1, "wallet1", 3);
 		checkWallet(wallets.get(1), 2, "wallet2", 3);
@@ -65,7 +65,7 @@ public class WalletDAOTest {
 
 	@Test(dependsOnMethods = "testLoadWallets")
 	public void testModifyWallet() {
-		Wallet wallet = walletDAO.loadWallet(2);
+		ColdWallet wallet = walletDAO.loadWallet(2);
 		checkWallet(wallet, 2, "wallet2", 3);
 
 		wallet.setName("wall2");
@@ -77,13 +77,13 @@ public class WalletDAOTest {
 		assertEquals(wallet.accounts.get(3L), "lalala");
 		assertEquals(wallet.accounts.get(4L), "lololo");
 
-		Wallet persisted = walletDAO.persistWallet(wallet);
+		ColdWallet persisted = walletDAO.persistWallet(wallet);
 		assertTrue(persisted == wallet);
 		assertEquals(wallet.getName(), "wall2");
 		assertEquals(wallet.accounts.get(3L), "lalala");
 		assertEquals(wallet.accounts.get(4L), "lololo");
 
-		Wallet fromDb = walletDAO.loadWallet(2);
+		ColdWallet fromDb = walletDAO.loadWallet(2);
 		assertTrue(fromDb != wallet);
 		assertEquals(fromDb.getName(), "wall2");
 		assertEquals(fromDb.accounts.get(3L), "lalala");

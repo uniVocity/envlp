@@ -7,7 +7,7 @@ import java.util.*;
 
 public class ReportDAO {
 
-	public List<Object[]> getAccountReport(Wallet wallet) {
+	public List<Object[]> getAccountReport(ColdWallet wallet) {
 		String query = "" +
 				" SELECT ac.account_idx AS account, ac.public_root_key AS root_key, " +
 				"        0 AS total_received, count(ad.account_idx) AS addresses, 0 AS used," +

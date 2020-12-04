@@ -14,7 +14,7 @@ public class WalletListEntry extends JToggleButton {
 
 	private static final Logger log = LoggerFactory.getLogger(WalletListEntry.class);
 
-	Wallet wallet;
+	ColdWallet wallet;
 
 	private JPanel getBalanceLabel(String balance) {
 		JPanel out = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -38,7 +38,7 @@ public class WalletListEntry extends JToggleButton {
 		return out;
 	}
 
-	public WalletListEntry(Wallet wallet) {
+	public WalletListEntry(ColdWallet wallet) {
 		this.wallet = wallet;
 		setLayout(new GridBagLayout());
 		setPreferredSize(new Dimension(250, 90));

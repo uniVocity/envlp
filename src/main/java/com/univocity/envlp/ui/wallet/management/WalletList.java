@@ -16,7 +16,7 @@ public class WalletList extends JPanel {
 	private JButton btAddWallet;
 	private JPanel walletListPanel;
 	private JScrollPane walletListScroll;
-	private final List<Consumer<Wallet>> walletSelectionListeners = new ArrayList<>();
+	private final List<Consumer<ColdWallet>> walletSelectionListeners = new ArrayList<>();
 
 	private List<WalletListEntry> wallets = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class WalletList extends JPanel {
 		return btAddWallet;
 	}
 
-	public void addWallet(Wallet wallet, boolean select) {
+	public void addWallet(ColdWallet wallet, boolean select) {
 		if(wallet == null){
 			walletSelectionListeners.forEach(l -> l.accept(getSelectedWallet()));
 			return;
@@ -74,7 +74,7 @@ public class WalletList extends JPanel {
 		}
 	}
 
-	public void addWalletSelectionListener(Consumer<Wallet> c) {
+	public void addWalletSelectionListener(Consumer<ColdWallet> c) {
 		walletSelectionListeners.add(c);
 	}
 
@@ -97,7 +97,7 @@ public class WalletList extends JPanel {
 	}
 
 	private void setSelectedWallet(WalletListEntry entry) {
-		Wallet selected;
+		ColdWallet selected;
 		if (entry.isSelected()) {
 			selected = entry.wallet;
 			for (WalletListEntry e : wallets) {
@@ -112,7 +112,7 @@ public class WalletList extends JPanel {
 
 	}
 
-	public Wallet getSelectedWallet() {
+	public ColdWallet getSelectedWallet() {
 		for (WalletListEntry e : wallets) {
 			if (e.isSelected()) {
 				return e.wallet;

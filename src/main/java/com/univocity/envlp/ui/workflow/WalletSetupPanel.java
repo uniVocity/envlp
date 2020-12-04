@@ -83,7 +83,7 @@ public class WalletSetupPanel extends WorkflowPanel {
 			return null;
 		} else {
 			walletName = walletName.trim();
-			Wallet wallet = new WalletDAO().getWalletByName(walletName);
+			ColdWallet wallet = new ColdWalletService().getWalletByName(walletName);
 			if (wallet != null) {
 				error = "A wallet named '" + walletName + "' already exists.";
 				return null;

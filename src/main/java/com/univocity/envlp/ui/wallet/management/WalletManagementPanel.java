@@ -169,13 +169,13 @@ public class WalletManagementPanel extends JPanel {
 		return walletCreationWorkflowPanel;
 	}
 
-	private void walletCreationEnded(Wallet wallet) {
+	private void walletCreationEnded(ColdWallet wallet) {
 		walletList.addWallet(wallet, true);
 		cards.show(centralPanel, WALLET_DETAILS);
 		walletList.getBtAddWallet().setEnabled(true);
 	}
 
-	private void walletSelected(Wallet wallet) {
+	private void walletSelected(ColdWallet wallet) {
 		setHeaderAndDescription(wallet != null ? wallet.getName() : "No wallet selected", wallet != null ? "0.000000 ADA" : "Select or create a new wallet to begin");
 		getWalletDetailsPanel().setWallet(wallet);
 		if(wallet == null) {

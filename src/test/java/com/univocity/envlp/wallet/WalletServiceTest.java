@@ -14,12 +14,12 @@ public class WalletServiceTest {
 		Database.initTest();
 	}
 
-	WalletService service = new WalletService();
+	ColdWalletService service = new ColdWalletService();
 
 	@Test
 	public void testCreateNewWallet() {
 		String seed = service.generateSeed();
-		Wallet wallet = service.createNewWallet("wallet from seed", seed);
+		ColdWallet wallet = service.createNewWallet("wallet from seed", seed);
 
 		assertNotNull(wallet);
 		assertNotNull(wallet.getCreatedAt());
@@ -36,7 +36,7 @@ public class WalletServiceTest {
 
 	@Test(dependsOnMethods = "testCreateNewWallet")
 	public void testAddAccountFromSeed() {
-		Wallet wallet = service.getWalletByName("myWallet");
+		ColdWallet wallet = service.getWalletByName("myWallet");
 		service.addAccountFromSeed(wallet, AddressManagerTest.seed, 10);
 		assertEquals(wallet.accounts.get(10L), AddressManagerTest.publicRootKey_10);
 
@@ -48,7 +48,7 @@ public class WalletServiceTest {
 
 	@Test(dependsOnMethods = "testAddAccountFromSeed")
 	public void testAddAccountsFromSeed() {
-		Wallet wallet = service.getWalletByName("myWallet");
+		ColdWallet wallet = service.getWalletByName("myWallet");
 		assertEquals(wallet.accounts.get(0L), AddressManagerTest.publicRootKey_0);
 		assertEquals(wallet.accounts.get(10L), AddressManagerTest.publicRootKey_10);
 
@@ -68,7 +68,7 @@ public class WalletServiceTest {
 
 	@Test(dependsOnMethods = "testAddAccountsFromSeed")
 	public void testGetPaymentAddress() {
-		Wallet wallet = service.getWalletByName("myWallet");
+		ColdWallet wallet = service.getWalletByName("myWallet");
 		String address0_0 = service.getPaymentAddress(wallet, 0, 0);
 		assertNotNull(address0_0);
 		String address0_0Again = service.getPaymentAddress(wallet, 0, 0);
@@ -84,7 +84,7 @@ public class WalletServiceTest {
 	@Test
 	public void testAllocateNextPaymentAddress() {
 		String seed = service.generateSeed();
-		Wallet wallet = service.createNewWallet("randomWallet2", seed);
+		ColdWallet wallet = service.createNewWallet("randomWallet2", seed);
 
 		//no other accounts registered, will allocate to default account 0
 		String payment1 = service.allocateNextPaymentAddress(wallet);
@@ -135,7 +135,7 @@ public class WalletServiceTest {
 	@Test
 	public void testAllocateNextPaymentAddressFromAccount() {
 		String seed = service.generateSeed();
-		Wallet wallet = service.createNewWallet("randomWallet1", seed);
+		ColdWallet wallet = service.createNewWallet("randomWallet1", seed);
 
 		String payment1 = service.allocateNextPaymentAddress(wallet, 0);
 		assertNotNull(payment1);
@@ -149,7 +149,7 @@ public class WalletServiceTest {
 
 	@Test(dependsOnMethods = "testAllocateNextPaymentAddressFromAccount")
 	public void testGetAddressesForDefaultAccount() {
-		Wallet wallet = service.getWalletByName("randomWallet1");
+		ColdWallet wallet = service.getWalletByName("randomWallet1");
 		List<AddressAllocation> addresses = service.getAddressesForDefaultAccount(wallet);
 		assertEquals(addresses.size(), 2);
 		for(AddressAllocation address : addresses){

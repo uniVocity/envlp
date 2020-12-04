@@ -39,7 +39,7 @@ public class WalletCreationWorkflow extends JPanel {
 	private JButton backButton;
 	private JPanel navigationPanel;
 	private final Stack<String> steps = new Stack<>();
-	private final Consumer<Wallet> workflowEndAction;
+	private final Consumer<ColdWallet> workflowEndAction;
 	private final BiConsumer<String, String> workflowStepDescription;
 	private WalletSetupPanel walletSetupPanel;
 	private WalletPasswordPanel walletPasswordPanel;
@@ -51,7 +51,7 @@ public class WalletCreationWorkflow extends JPanel {
 	private Map<String, WorkflowPanel> panels = new HashMap<>();
 	private DisabledGlassPane glassPane;
 
-	public WalletCreationWorkflow(Consumer<Wallet> workflowEndAction, BiConsumer<String, String> workflowStepDescription) {
+	public WalletCreationWorkflow(Consumer<ColdWallet> workflowEndAction, BiConsumer<String, String> workflowStepDescription) {
 		super(new BorderLayout());
 		this.add(getCardPanel(), BorderLayout.CENTER);
 		this.add(getNavigationPanel(), BorderLayout.SOUTH);
@@ -242,7 +242,7 @@ public class WalletCreationWorkflow extends JPanel {
 
 	private void createWallet() {
 		Thread thread = new Thread(() -> {
-			Wallet[] wallet = new Wallet[1];
+			ColdWallet[] wallet = new ColdWallet[1];
 			try {
 				String walletName = walletSetupPanel.getWalletName();
 				String seed = String.valueOf(panels.get(steps.peek()).getValue());
@@ -250,7 +250,7 @@ public class WalletCreationWorkflow extends JPanel {
 
 				getDisabledGlassPane().activate("Setting up wallet " + walletName + "...");
 
-				WalletService service = new WalletService();
+				ColdWalletService service = new ColdWalletService();
 				wallet[0] = service.createNewWallet(walletName, seed);
 
 				service.addAccountsFromSeed(wallet[0], seed, 10);
