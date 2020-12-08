@@ -29,6 +29,11 @@ public class Dependencies {
 	}
 
 	@Bean
+	public WalletFormatDAO walletFormatDAO(){
+		return new WalletFormatDAO(tokenDAO());
+	}
+
+	@Bean
 	public TokenDAO tokenDAO() {
 		return new TokenDAO();
 	}
@@ -50,7 +55,7 @@ public class Dependencies {
 
 	@Bean
 	public WalletDAO walletDAO() {
-		return new WalletDAO(addressAllocationDAO(), tokenDAO(), externalWalletProviderDAO());
+		return new WalletDAO(addressAllocationDAO(), tokenDAO(), externalWalletProviderDAO(), walletFormatDAO());
 	}
 
 	@Bean

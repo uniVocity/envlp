@@ -1,8 +1,6 @@
 package com.univocity.envlp.wallet.persistence.dao;
 
 import com.univocity.cardano.wallet.builders.wallets.*;
-import com.univocity.cardano.wallet.builders.wallets.addresses.*;
-import com.univocity.envlp.database.*;
 import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.slf4j.*;
@@ -14,41 +12,41 @@ import java.sql.*;
 import java.util.*;
 
 @Repository
-public class WalletDAO extends BaseDAO{
+public class WalletDAO extends BaseDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(WalletDAO.class);
 
-	private TokenDAO tokenDAO;
-	private ExternalWalletProviderDAO externalWalletProviderDAO;
-	private WalletFormatDAO walletFormatDAO;
-
-	private final RowMapper<WalletSnapshot> walletMapper = (rs, rowNum) -> {
-		WalletSnapshot out = new WalletSnapshot();
-
-		out.setId(rs.getLong("id"));
-		out.setToken(tokenDAO.getTokenById(rs.getLong("token_id")));
-
-		out.setName(rs.getString("name"));
-		out.setExternalWalletId(rs.getString("external_wallet_id"));
-		out.setExternalWalletProvider(externalWalletProviderDAO.getWalletProviderById(rs.getLong("external_wallet_provider_id")));
-		out.setFormat(walletFormatDAO.getWalletFormatById(rs.getLong("format_id")));
-		out.setAccountBalance(rs.getBigDecimal("account_balance"));
-		out.setRewardsBalance(rs.getBigDecimal("rewards_balance"));
-
-		out.setCreatedAt(Utils.toLocalDateTime(rs.getTimestamp("created_at")));
-		out.setUpdatedAt(Utils.toLocalDateTime(rs.getTimestamp("updated_at")));
-		return out;
-	};
-
-	
+	private final TokenDAO tokenDAO;
+	private final WalletFormatDAO walletFormatDAO;
 	private final AddressAllocationDAO addressAllocationDAO;
+	private final ExternalWalletProviderDAO externalWalletProviderDAO;
+
+	private final RowMapper<WalletSnapshot> walletMapper;
+
+
 
 	@Autowired
-	public WalletDAO(AddressAllocationDAO addressAllocationDAO, TokenDAO tokenDAO, ExternalWalletProviderDAO externalWalletProviderDAO){
+	public WalletDAO(AddressAllocationDAO addressAllocationDAO, TokenDAO tokenDAO, ExternalWalletProviderDAO externalWalletProviderDAO, WalletFormatDAO walletFormatDAO) {
 		this.addressAllocationDAO = addressAllocationDAO;
 		this.tokenDAO = tokenDAO;
+		this.externalWalletProviderDAO = externalWalletProviderDAO;
+		this.walletFormatDAO = walletFormatDAO;
+
+		walletMapper = (rs, rowNum) -> {
+			WalletSnapshot out = new WalletSnapshot(rs.getLong("id"), rs.getString("name"));
+			out.setToken(this.tokenDAO.getTokenById(rs.getLong("token_id")));
+			out.setExternalWalletId(rs.getString("external_wallet_id"));
+			out.setExternalWalletProvider(this.externalWalletProviderDAO.getWalletProviderById(rs.getLong("external_wallet_provider_id")));
+			out.setFormat(walletFormatDAO.getWalletFormatById(rs.getLong("format_id")));
+			out.setAccountBalance(rs.getBigDecimal("account_balance"));
+			out.setRewardsBalance(rs.getBigDecimal("rewards_balance"));
+
+			out.setCreatedAt(Utils.toLocalDateTime(rs.getTimestamp("created_at")));
+			out.setUpdatedAt(Utils.toLocalDateTime(rs.getTimestamp("updated_at")));
+			return out;
+		};
 	}
-	
+
 	public WalletSnapshot persistWallet(WalletSnapshot wallet) {
 		if (wallet.getAccounts().isEmpty()) {
 			throw new IllegalStateException("Can't persist wallet without accounts");
@@ -66,8 +64,7 @@ public class WalletDAO extends BaseDAO{
 
 		long id = wallet.getId();
 		if (id == 0) {
-			id = db().insertReturningKey("wallet_snapshot", data).longValue();
-			wallet.setId(id);
+			id = db().insertReturningKey("wallet_snapshot", "id", data).longValue();
 		} else {
 			data.put("id", id);
 			db().update("wallet_snapshot", data, new String[]{"id"});
@@ -80,6 +77,8 @@ public class WalletDAO extends BaseDAO{
 
 		db().batchUpdate("MERGE INTO wallet_account (wallet_id, account_idx, public_root_key) KEY (wallet_id, account_idx) VALUES (?,?,?);", batch);
 		addressAllocationDAO.createDefaultAllocations(wallet);
+
+		wallet = db().queryForObject("SELECT * FROM wallet_snapshot WHERE id = ?", walletMapper, walletId);
 
 		loadAccounts(wallet);
 

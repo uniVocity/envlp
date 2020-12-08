@@ -1,4 +1,4 @@
-package com.univocity.envlp.wallet;
+package com.univocity.envlp.wallet.persistence.dao;
 
 import com.univocity.cardano.wallet.builders.server.*;
 import com.univocity.envlp.*;

@@ -6,7 +6,7 @@ import java.time.*;
 
 public class Token {
 
-	private long id;
+	private final long id;
 	private String name;
 	private String ticker;
 	private String monetarySymbol;
@@ -19,12 +19,16 @@ public class Token {
 
 	private ThreadLocal<DecimalFormat> priceFormatter;
 
-	public long getId() {
-		return id;
+	public Token() {
+		this(0);
 	}
 
-	public void setId(long id) {
+	public Token(long id) {
 		this.id = id;
+	}
+
+	public long getId() {
+		return id;
 	}
 
 	public String getName() {

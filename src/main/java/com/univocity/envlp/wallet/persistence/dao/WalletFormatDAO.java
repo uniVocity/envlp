@@ -10,21 +10,20 @@ import org.springframework.stereotype.*;
 import java.util.*;
 
 @Repository
-public class WalletFormatDAO extends BaseDAO{
+public class WalletFormatDAO extends BaseDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(WalletFormatDAO.class);
 
 	private TokenDAO tokenDAO;
 
 	@Autowired
-	WalletFormatDAO(TokenDAO tokenDAO) {
+	public WalletFormatDAO(TokenDAO tokenDAO) {
 		this.tokenDAO = tokenDAO;
 	}
 
 	private final RowMapper<WalletFormat> walletFormatRowMapper = (rs, rowNum) -> {
-		WalletFormat out = new WalletFormat();
-		out.setId(rs.getLong("id"));
-		out.setToken(tokenDAO.getTokenById(rs.getLong("token")));
+		Token token = tokenDAO.getTokenById(rs.getLong("token"));
+		WalletFormat out = new WalletFormat(rs.getLong("id"), token);
 		out.setName(rs.getString("name"));
 		out.setDescription(rs.getString("description"));
 		out.setCreatedAt(Utils.toLocalDateTime(rs.getTimestamp("created_at")));
@@ -41,7 +40,7 @@ public class WalletFormatDAO extends BaseDAO{
 
 		long id = walletFormat.getId();
 		if (id == 0) {
-			id = db().insertReturningKey("wallet_format", data).longValue();
+			id = db().insertReturningKey("wallet_format", "id", data).longValue();
 		} else {
 			db().update("wallet_format", data, new String[]{"id"});
 		}

@@ -4,7 +4,7 @@ import java.time.*;
 
 public class WalletFormat {
 
-	private long id;
+	private final long id;
 	private Token token;
 
 	private String name;
@@ -13,20 +13,20 @@ public class WalletFormat {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
+	public WalletFormat(long id, Token token) {
+		this.id = id;
+		if(token == null){
+			throw new IllegalStateException("Token information can't be null");
+		}
+		this.token = token;
+	}
+
 	public long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	public Token getToken() {
 		return token;
-	}
-
-	public void setToken(Token token) {
-		this.token = token;
 	}
 
 	public String getName() {

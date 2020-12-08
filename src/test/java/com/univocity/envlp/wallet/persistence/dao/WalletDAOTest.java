@@ -1,6 +1,5 @@
-package com.univocity.envlp.wallet;
+package com.univocity.envlp.wallet.persistence.dao;
 
-import com.univocity.envlp.wallet.persistence.dao.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.springframework.beans.factory.annotation.*;
 import org.testng.annotations.*;

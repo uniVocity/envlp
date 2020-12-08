@@ -31,6 +31,7 @@ public class Database {
 		db = new ExtendedJdbcTemplate(dataSource);
 
 		createTableIfNotExists("token");
+		createTableIfNotExists("external_wallet_provider");
 		createTableIfNotExists("wallet_format");
 		createTableIfNotExists("wallet_snapshot");
 		createTableIfNotExists("wallet_account");

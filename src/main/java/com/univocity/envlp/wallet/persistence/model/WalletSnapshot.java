@@ -8,7 +8,7 @@ import java.util.*;
 
 public class WalletSnapshot {
 
-	private long id;
+	private final long id;
 	private Token token;
 
 	private String name;
@@ -25,15 +25,13 @@ public class WalletSnapshot {
 
 	private final Map<Long, String> accounts = new TreeMap<>();
 
-	public WalletSnapshot() {
-
+	public WalletSnapshot(String name) {
+		this(0, name);
 	}
 
-	public WalletSnapshot(String name) {
-		if (StringUtils.isBlank(name)) {
-			throw new IllegalArgumentException("Wallet name cannot be null/blank");
-		}
-		this.name = name;
+	public WalletSnapshot(long id, String name) {
+		this.id = id;
+		setName(name);
 	}
 
 	public void addPublicRootKey(long accountIndex, String publicRootKey) {
@@ -50,15 +48,14 @@ public class WalletSnapshot {
 		return id;
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
+		if (StringUtils.isBlank(name)) {
+			throw new IllegalArgumentException("Wallet name cannot be null/blank");
+		}
 		this.name = name;
 	}
 
@@ -102,7 +99,7 @@ public class WalletSnapshot {
 		this.token = token;
 	}
 
-	public BigDecimal getTotalBalance(){
+	public BigDecimal getTotalBalance() {
 		return getAccountBalance().add(getRewardsBalance());
 	}
 
@@ -110,7 +107,7 @@ public class WalletSnapshot {
 		return token.getFormattedAmount(getTotalBalance());
 	}
 
-	public BigDecimal getAccountBalance(){
+	public BigDecimal getAccountBalance() {
 		return accountBalance == null ? BigDecimal.ZERO : accountBalance;
 	}
 
@@ -118,7 +115,7 @@ public class WalletSnapshot {
 		return token.getFormattedAmount(getAccountBalance());
 	}
 
-	public BigDecimal getRewardsBalance(){
+	public BigDecimal getRewardsBalance() {
 		return rewardsBalance == null ? BigDecimal.ZERO : rewardsBalance;
 	}
 

@@ -11,9 +11,7 @@ import java.util.*;
 public class ExternalWalletProviderDAO extends BaseDAO {
 
 	private static RowMapper<ExternalWalletProvider> rowMapper = (rs, rowNum) -> {
-		ExternalWalletProvider out = new ExternalWalletProvider();
-
-		out.setId(rs.getLong("id"));
+		ExternalWalletProvider out = new ExternalWalletProvider(rs.getLong("id"));
 		out.setClassName(rs.getString("class_name"));
 		out.setName(rs.getString("name"));
 		out.setVersion(rs.getString("version"));
@@ -33,7 +31,7 @@ public class ExternalWalletProviderDAO extends BaseDAO {
 
 		long id = externalWalletProvider.getId();
 		if (id == 0) {
-			id = db().insertReturningKey("external_wallet_provider", data).longValue();
+			id = db().insertReturningKey("external_wallet_provider", "id", data).longValue();
 		} else {
 			data.put("id", id);
 			db().update("external_wallet_provider", data, new String[]{"id"});

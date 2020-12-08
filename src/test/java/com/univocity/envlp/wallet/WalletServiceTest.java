@@ -1,6 +1,8 @@
 package com.univocity.envlp.wallet;
 
 import com.univocity.cardano.wallet.addresses.*;
+import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.dao.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.springframework.beans.factory.annotation.*;
 import org.testng.annotations.*;

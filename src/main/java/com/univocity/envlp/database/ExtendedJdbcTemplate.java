@@ -74,10 +74,6 @@ public class ExtendedJdbcTemplate extends JdbcTemplate {
 		return DataAccessUtils.requiredSingleResult(results);
 	}
 
-	public Number insertReturningKey(final String table, Map<String, Object> data) {
-		return insertReturningKey(table, null, data);
-	}
-
 	public Number insertReturningKey(final String table, String generatedKeyColumn, Map<String, Object> data) {
 		String insert = generateInsertStatement(table, data.keySet().toArray(new String[0]));
 
@@ -86,19 +82,19 @@ public class ExtendedJdbcTemplate extends JdbcTemplate {
 	}
 
 	private Number getGeneratedKey(KeyHolder holder, String column) {
-		Map<String, Object> keys = holder.getKeys();
-		if (keys == null || keys.isEmpty()) {
+		List<Map<String, Object>> keys = holder.getKeyList();
+		if (keys.isEmpty()) {
 			return null;
 		}
-		if (column == null || keys.size() == 1) {
-			return holder.getKey();
-		} else {
-			Number out = (Number) keys.get(column);
-			if (out == null && !keys.containsKey(column)) {
-				throw new IllegalArgumentException("Unknown generated column name '" + column + "'. Available column names are: " + keys.keySet());
-			}
-			return out;
+
+		Map<String, Object> keyMap = holder.getKeys();
+
+		Number out = (Number) keyMap.get(column);
+		if (out == null && !keyMap.containsKey(column)) {
+			throw new IllegalArgumentException("Unknown generated column name '" + column + "'. Available column names are: " + keyMap.keySet());
 		}
+		return out;
+
 	}
 
 	public int insert(final String insert, Object... args) {

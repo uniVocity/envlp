@@ -4,7 +4,7 @@ import java.time.*;
 
 public class ExternalWalletProvider {
 
-	private long id;
+	private final long id;
 	private String className;
 	private String name;
 	private String version;
@@ -13,12 +13,16 @@ public class ExternalWalletProvider {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public long getId() {
-		return id;
+	public ExternalWalletProvider() {
+		this(0);
 	}
 
-	public void setId(long id) {
+	public ExternalWalletProvider(long id) {
 		this.id = id;
+	}
+
+	public long getId() {
+		return id;
 	}
 
 	public String getClassName() {
