@@ -11,9 +11,8 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Configuration {
-	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
-	private static final Configuration instance = new Configuration();
+public class WalletConfiguration {
+	private static final Logger log = LoggerFactory.getLogger(WalletConfiguration.class);
 
 	private final PropertyBasedConfiguration config;
 
@@ -24,11 +23,7 @@ public class Configuration {
 	private File configurationDir;
 	private final File cardanoToolsDir;
 
-	public static Configuration getInstance() {
-		return instance;
-	}
-
-	private Configuration() {
+	WalletConfiguration() {
 		config = new PropertyBasedConfiguration("config/application.properties", "application.properties");
 		String toolsDir = config.getProperty("cardano.tools.dir");
 

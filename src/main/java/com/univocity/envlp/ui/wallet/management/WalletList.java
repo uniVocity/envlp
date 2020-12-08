@@ -2,7 +2,7 @@ package com.univocity.envlp.ui.wallet.management;
 
 import com.github.weisj.darklaf.components.*;
 import com.univocity.envlp.utils.*;
-import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,7 @@ public class WalletList extends JPanel {
 	private JButton btAddWallet;
 	private JPanel walletListPanel;
 	private JScrollPane walletListScroll;
-	private final List<Consumer<ColdWallet>> walletSelectionListeners = new ArrayList<>();
+	private final List<Consumer<WalletSnapshot>> walletSelectionListeners = new ArrayList<>();
 
 	private List<WalletListEntry> wallets = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class WalletList extends JPanel {
 		return btAddWallet;
 	}
 
-	public void addWallet(ColdWallet wallet, boolean select) {
+	public void addWallet(WalletSnapshot wallet, boolean select) {
 		if(wallet == null){
 			walletSelectionListeners.forEach(l -> l.accept(getSelectedWallet()));
 			return;
@@ -74,7 +74,7 @@ public class WalletList extends JPanel {
 		}
 	}
 
-	public void addWalletSelectionListener(Consumer<ColdWallet> c) {
+	public void addWalletSelectionListener(Consumer<WalletSnapshot> c) {
 		walletSelectionListeners.add(c);
 	}
 
@@ -97,7 +97,7 @@ public class WalletList extends JPanel {
 	}
 
 	private void setSelectedWallet(WalletListEntry entry) {
-		ColdWallet selected;
+		WalletSnapshot selected;
 		if (entry.isSelected()) {
 			selected = entry.wallet;
 			for (WalletListEntry e : wallets) {
@@ -112,7 +112,7 @@ public class WalletList extends JPanel {
 
 	}
 
-	public ColdWallet getSelectedWallet() {
+	public WalletSnapshot getSelectedWallet() {
 		for (WalletListEntry e : wallets) {
 			if (e.isSelected()) {
 				return e.wallet;

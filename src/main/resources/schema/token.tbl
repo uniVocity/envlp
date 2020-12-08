@@ -1,0 +1,18 @@
+CREATE TABLE token (
+
+	id BIGINT NOT NULL AUTO_INCREMENT,
+
+	name VARCHAR(255) NOT NULL,
+	ticker VARCHAR(127) NOT NULL,
+	monetary_symbol VARCHAR(15),
+	description CLOB,
+	amount_pattern VARCHAR(255),
+	decimals INTEGER NOT NULL,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+
+    CONSTRAINT token_pk PRIMARY KEY (id),
+    CONSTRAINT token_name_uq UNIQUE (name),
+    CONSTRAINT token_ticker_uq UNIQUE (ticker)
+);

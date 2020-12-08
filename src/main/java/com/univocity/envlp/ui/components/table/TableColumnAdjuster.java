@@ -1,4 +1,4 @@
-package com.univocity.envlp.ui.components;
+package com.univocity.envlp.ui.components.table;
 
 import javax.swing.*;
 import javax.swing.event.*;

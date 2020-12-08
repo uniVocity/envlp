@@ -1,7 +1,7 @@
 package com.univocity.envlp.ui.wallet.management;
 
 import com.univocity.envlp.ui.components.labels.*;
-import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 import org.slf4j.*;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ public class WalletListEntry extends JToggleButton {
 
 	private static final Logger log = LoggerFactory.getLogger(WalletListEntry.class);
 
-	ColdWallet wallet;
+	WalletSnapshot wallet;
 
 	private JPanel getBalanceLabel(String balance) {
 		JPanel out = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -38,7 +38,7 @@ public class WalletListEntry extends JToggleButton {
 		return out;
 	}
 
-	public WalletListEntry(ColdWallet wallet) {
+	public WalletListEntry(WalletSnapshot wallet) {
 		this.wallet = wallet;
 		setLayout(new GridBagLayout());
 		setPreferredSize(new Dimension(250, 90));
@@ -57,7 +57,7 @@ public class WalletListEntry extends JToggleButton {
 		c.insets = new Insets(10, 25, 0, 25);
 		c.gridy = 1;
 		c.weighty = 1.0;
-		add(getBalanceLabel("0.000000"), c);
+		add(getBalanceLabel(wallet.getFormattedTotalBalance()), c);
 
 		LocalDateTime date = wallet.getCreatedAt();
 		String formattedDate = "";

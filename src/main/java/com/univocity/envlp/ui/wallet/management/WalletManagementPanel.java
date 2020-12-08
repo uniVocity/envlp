@@ -6,7 +6,7 @@ import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.ui.wallet.actions.*;
 import com.univocity.envlp.ui.workflow.*;
 import com.univocity.envlp.utils.*;
-import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -169,13 +169,13 @@ public class WalletManagementPanel extends JPanel {
 		return walletCreationWorkflowPanel;
 	}
 
-	private void walletCreationEnded(ColdWallet wallet) {
+	private void walletCreationEnded(WalletSnapshot wallet) {
 		walletList.addWallet(wallet, true);
 		cards.show(centralPanel, WALLET_DETAILS);
 		walletList.getBtAddWallet().setEnabled(true);
 	}
 
-	private void walletSelected(ColdWallet wallet) {
+	private void walletSelected(WalletSnapshot wallet) {
 		setHeaderAndDescription(wallet != null ? wallet.getName() : "No wallet selected", wallet != null ? "0.000000 ADA" : "Select or create a new wallet to begin");
 		getWalletDetailsPanel().setWallet(wallet);
 		if(wallet == null) {

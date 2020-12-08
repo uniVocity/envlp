@@ -16,7 +16,6 @@ import java.nio.charset.*;
 public class Database {
 
 	private static final Logger log = LoggerFactory.getLogger(Database.class);
-	private static Database instance;
 
 	private final ExtendedJdbcTemplate db;
 
@@ -31,7 +30,9 @@ public class Database {
 
 		db = new ExtendedJdbcTemplate(dataSource);
 
-		createTableIfNotExists("wallet");
+		createTableIfNotExists("token");
+		createTableIfNotExists("wallet_format");
+		createTableIfNotExists("wallet_snapshot");
 		createTableIfNotExists("wallet_account");
 		createTableIfNotExists("address_allocation");
 	}
@@ -59,21 +60,11 @@ public class Database {
 		}
 	}
 
-	private static synchronized void init(String url) {
-		if (instance == null) {
-			instance = new Database(url);
-		}
+	public static ExtendedJdbcTemplate initLocal() {
+		return new Database("jdbc:h2:./db/wallet").db;
 	}
 
-	public static void initLocal() {
-		init("jdbc:h2:./db/wallet");
-	}
-
-	public static void initTest() {
-		init("jdbc:h2:mem:wallet");
-	}
-
-	public static ExtendedJdbcTemplate get() {
-		return instance.db;
+	public static ExtendedJdbcTemplate initTest() {
+		return new Database("jdbc:h2:mem:wallet").db;
 	}
 }

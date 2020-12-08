@@ -11,6 +11,6 @@ CREATE TABLE address_allocation (
     claimed_at TIMESTAMP,
 
     CONSTRAINT address_allocation_key PRIMARY KEY (wallet_id, account_idx, derivation_idx),
-    CONSTRAINT address_allocation_wallet_id FOREIGN KEY (wallet_id) REFERENCES wallet(id) ON DELETE CASCADE,
+    CONSTRAINT address_allocation_wallet_id FOREIGN KEY (wallet_id) REFERENCES wallet_snapshot(id) ON DELETE CASCADE,
     CONSTRAINT address_allocation_wallet_account_id FOREIGN KEY (wallet_id, account_idx) REFERENCES wallet_account(wallet_id, account_idx) ON DELETE CASCADE
 );

@@ -1,13 +1,18 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.envlp.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 import org.apache.commons.lang3.*;
 import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 
+@Component
 public class WalletSetupPanel extends WorkflowPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(WalletSetupPanel.class);
@@ -15,9 +20,10 @@ public class WalletSetupPanel extends WorkflowPanel {
 	private JPanel fieldsPanel;
 	private JTextField walletNameTxt;
 	private String error;
+	private final WalletSnapshotService walletService;
 
 	public WalletSetupPanel() {
-
+		walletService = App.get(WalletSnapshotService.class);
 	}
 
 	private JPanel getFieldsPanel() {
@@ -83,7 +89,7 @@ public class WalletSetupPanel extends WorkflowPanel {
 			return null;
 		} else {
 			walletName = walletName.trim();
-			ColdWallet wallet = new ColdWalletService().getWalletByName(walletName);
+			WalletSnapshot wallet = walletService.getWalletByName(walletName);
 			if (wallet != null) {
 				error = "A wallet named '" + walletName + "' already exists.";
 				return null;

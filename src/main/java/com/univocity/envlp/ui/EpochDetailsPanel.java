@@ -135,9 +135,15 @@ public class EpochDetailsPanel extends JPanel {
 		long hours = diff.toHoursPart();
 		long minutes = diff.toMinutesPart();
 		StringBuilder time = new StringBuilder();
-		append(time, "day", "%d", days, false);
-		append(time, "hour", "%02d", hours, false);
-		append(time, "minute", "%02d", minutes, true);
+		if(days != 0) {
+			append(time, "day", "%d", days, false);
+		}
+		if(hours != 0) {
+			append(time, "hour", "%d", hours, false);
+		}
+		if(minutes != 0) {
+			append(time, "minute", "%d", minutes, true);
+		}
 		epochDuration.setText(time.toString());
 
 		cardLayout.show(cards, EPOCH);

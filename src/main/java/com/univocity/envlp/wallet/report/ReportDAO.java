@@ -1,13 +1,16 @@
 package com.univocity.envlp.wallet.report;
 
 import com.univocity.envlp.database.*;
-import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.dao.*;
+import com.univocity.envlp.wallet.persistence.model.*;
+import org.springframework.stereotype.*;
 
 import java.util.*;
 
-public class ReportDAO {
+@Repository
+public class ReportDAO extends BaseDAO {
 
-	public List<Object[]> getAccountReport(ColdWallet wallet) {
+	public List<Object[]> getWalletAccountUsageReport(WalletSnapshot wallet) {
 		String query = "" +
 				" SELECT ac.account_idx AS account, ac.public_root_key AS root_key, " +
 				"        0 AS total_received, count(ad.account_idx) AS addresses, 0 AS used," +
@@ -22,6 +25,6 @@ public class ReportDAO {
 				" GROUP BY ac.wallet_id, ac.account_idx " +
 				" ORDER BY ac.account_idx";
 
-		return Database.get().query(query, ObjectArrayRowMapper.getInstance(), wallet.getId());
+		return db().query(query, ObjectArrayRowMapper.getInstance(), wallet.getId());
 	}
 }

@@ -1,11 +1,14 @@
 package com.univocity.envlp.ui.wallet.actions;
 
 import com.github.weisj.darklaf.components.*;
+import com.univocity.envlp.*;
 import com.univocity.envlp.database.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.*;
 import com.univocity.envlp.ui.components.labels.*;
+import com.univocity.envlp.ui.components.table.*;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -17,22 +20,22 @@ import java.util.function.*;
 
 public class ReceivingPanel extends JPanel {
 
-	private final ColdWalletService walletService;
+	private final WalletSnapshotService walletService;
 	private AutoAdjustingTable addressTable;
 	private ReadOnlyTableModel addressTableModel;
 	private JScrollPane addressTableScroll;
 	private List<Consumer<String>> addressSelectionListeners = new ArrayList<>();
 	private boolean selectionIsAdjusting = false;
 	private LinkLabel addAddressLink;
-	private ColdWallet wallet;
+	private WalletSnapshot wallet;
 
 	private JPanel commandsPanel;
 
-	public ReceivingPanel(ColdWalletService walletService) {
+	public ReceivingPanel() {
 		super(new BorderLayout());
 		this.add(getCommandsPanel(), BorderLayout.NORTH);
 		this.add(new OverlayScrollPane(getAddressTableScroll()), BorderLayout.CENTER);
-		this.walletService = walletService;
+		this.walletService = App.get(WalletSnapshotService.class);
 		this.addHierarchyListener(e -> updateAddressSelection());
 	}
 
@@ -97,7 +100,7 @@ public class ReceivingPanel extends JPanel {
 		return addressTableModel;
 	}
 
-	public void setWallet(ColdWallet wallet) {
+	public void setWallet(WalletSnapshot wallet) {
 		this.wallet = wallet;
 		getAddAddressLink().setEnabled(wallet != null);
 		selectionIsAdjusting = true;
@@ -149,15 +152,15 @@ public class ReceivingPanel extends JPanel {
 	public static void main(String... args) {
 		Database.initTest();
 
-		ColdWalletService service = new ColdWalletService();
+		WalletSnapshotService service = App.get(WalletSnapshotService.class);
 		String seed = service.generateSeed();
-		ColdWallet wallet = service.createNewWallet("test", seed);
+		WalletSnapshot wallet = service.createNewWallet("test", seed);
 
 		service.allocateNextPaymentAddress(wallet);
 		service.allocateNextPaymentAddress(wallet);
 		service.allocateNextPaymentAddress(wallet);
 
-		ReceivingPanel panel = new ReceivingPanel(new ColdWalletService());
+		ReceivingPanel panel = new ReceivingPanel();
 		panel.setWallet(wallet);
 
 		WindowUtils.launchTestWindow(panel);

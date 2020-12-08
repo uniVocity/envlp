@@ -11,8 +11,10 @@ import com.univocity.envlp.ui.components.*;
 import com.univocity.envlp.ui.wallet.management.*;
 import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.*;
-import okhttp3.*;
 import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.context.*;
+import org.springframework.context.annotation.*;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.*;
@@ -22,11 +24,14 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.function.*;
 
+@org.springframework.stereotype.Component
 public class Main {
 
 	private static final Logger log = LoggerFactory.getLogger(Main.class);
 	static boolean themeManagerLoaded = false;
 	private static Theme defaultTheme;
+
+	private WalletConfiguration config;
 
 	private static void initUI() {
 		log.info("\n=================================\nStarting up ENVLP wallet\n=================================");
@@ -69,7 +74,7 @@ public class Main {
 		}
 	}
 
-	private final JFrame frame;
+	private JFrame frame;
 
 	private JTabbedPane applicationTabs = new JTabbedPane();
 
@@ -80,13 +85,25 @@ public class Main {
 	private WalletManagementPanel walletPanel;
 	private JPanel themeSettingsPanel;
 
-	private static Main instance;
 	private static boolean running = false;
-	private RemoteWalletServer walletServer;
 	private EpochDetailsPanel epochDetailsPanel;
+	private static Main instance;
+
 	private WalletService walletService;
 
-	private Main() {
+	private RemoteWalletServer walletServer;
+
+	@Autowired
+	Main(WalletConfiguration configuration, WalletService walletService, RemoteWalletServer walletServer) {
+		this.config = configuration;
+		this.walletService = walletService;
+		this.walletServer = walletServer;
+	}
+
+	private void initialize(){
+		if(frame != null){
+			return;
+		}
 		frame = new JFrame();
 		frame.setTitle("ENVLP wallet manager");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -103,61 +120,19 @@ public class Main {
 		openWalletsTab();
 		frame.setJMenuBar(new MainMenu(this));
 		frame.add(getEpochDetailsPanel(), BorderLayout.SOUTH);
-	}
 
-	private RemoteWalletServer getWalletServer() {
-		if (walletServer == null) {
-			Configuration config = Configuration.getInstance();
-
-			int port = config.getCardanoNodePort();
-			if (port == -1) {
-				walletServer = WalletServer.remote("localhost").connectToPort(config.getWalletServicePort());
-				cardanoNodeControlPanel = null;
-				cardanoWalletControlPanel = null;
-			} else {
-				EmbeddedWalletServer server = WalletServer.embedded()
-						.binariesIn(config.getCardanoToolsDirPath())
-						.mainnetNode()
-						.configuration(config.getNodeConfigurationFilePath())
-						.topology(config.getTopologyFilePath())
-						.storeBlockchainIn(config.getBlockchainDirPath())
-						.port(config.getCardanoNodePort())
-						.ignoreOutput()
-						.wallet()
-						.enableHttps()
-						.port(config.getWalletServicePort())
-						.ignoreOutput();
-
-				cardanoNodeControlPanel = intializeProcess(server.getNodeManager());
-				cardanoWalletControlPanel = intializeProcess(server.getWalletManager());
-				walletServer = server;
-
-				server.start();
-				log.info("Network clock details: " + walletServer.network().clock());
-			}
-
+		if (walletServer instanceof EmbeddedWalletServer) {
+			EmbeddedWalletServer server = (EmbeddedWalletServer) walletServer;
+			cardanoNodeControlPanel = intializeProcess(server.getNodeManager());
+			cardanoWalletControlPanel = intializeProcess(server.getWalletManager());
 		}
-		return walletServer;
 	}
 
-	private WalletService getWalletService() {
-		if (walletService == null) {
-			this.walletService = new WalletService(getWalletServer());
-		}
-		return walletService;
-	}
 
 	private ProcessControlPanel intializeProcess(ProcessManager process) {
 		ProcessControlPanel out = new ProcessControlPanel(process);
 		out.startProcess();
 		return out;
-	}
-
-	public static synchronized Main getInstance() {
-		if (instance == null) {
-			instance = new Main();
-		}
-		return instance;
 	}
 
 	private JTabbedPane getApplicationTabs() {
@@ -194,7 +169,7 @@ public class Main {
 	WalletManagementPanel getWalletPanel() {
 		if (walletPanel == null) {
 			walletPanel = new WalletManagementPanel();
-			getWalletService().loadWallets().forEach(wallet -> walletPanel.getWalletList().addWallet(wallet, false));
+			walletService.loadWallets().forEach(wallet -> walletPanel.getWalletList().addWallet(wallet, false));
 		}
 		return walletPanel;
 	}
@@ -229,7 +204,7 @@ public class Main {
 
 	public EpochDetailsPanel getEpochDetailsPanel() {
 		if (epochDetailsPanel == null) {
-			epochDetailsPanel = new EpochDetailsPanel(getWalletServer());
+			epochDetailsPanel = new EpochDetailsPanel(walletServer);
 		}
 		return epochDetailsPanel;
 	}
@@ -238,7 +213,13 @@ public class Main {
 		return running;
 	}
 
+	public static Main getInstance(){
+		return instance;
+	}
+
 	public void run() {
+		initialize();
+
 		SwingUtilities.invokeLater(() -> {
 			running = true;
 			frame.setVisible(true);
@@ -249,6 +230,8 @@ public class Main {
 	public static void main(String... args) {
 		initUI();
 		Database.initLocal();
-		Main.getInstance().run();
+
+		Main.instance = App.get(Main.class);
+		instance.run();
 	}
 }

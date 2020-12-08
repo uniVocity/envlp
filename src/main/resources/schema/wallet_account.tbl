@@ -9,5 +9,5 @@ CREATE TABLE wallet_account (
 
     CONSTRAINT wallet_account_key PRIMARY KEY (wallet_id, account_idx),
     CONSTRAINT public_root_key_uq UNIQUE (public_root_key),
-    CONSTRAINT wallet_account_wallet_id FOREIGN KEY (wallet_id) REFERENCES wallet(id) ON DELETE CASCADE
+    CONSTRAINT wallet_account_wallet_id FOREIGN KEY (wallet_id) REFERENCES wallet_snapshot(id) ON DELETE CASCADE
 );

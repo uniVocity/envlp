@@ -2,6 +2,7 @@ package com.univocity.envlp.ui.workflow;
 
 import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.cardano.wallet.common.*;
+import com.univocity.envlp.*;
 import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.ui.components.wordlist.*;
 import com.univocity.envlp.wallet.*;
@@ -17,9 +18,11 @@ public class SeedInputPanel extends WorkflowPanel {
 	private final SeedWordCountSelectionPanel wordCountSelectionPanel;
 
 	private SubtitleLabel subtitleLabel;
+	private final AddressManager addressManager;
 
 	public SeedInputPanel(SeedWordCountSelectionPanel wordCountSelectionPanel) {
 		this.wordCountSelectionPanel = wordCountSelectionPanel;
+		this.addressManager = App.get(AddressManager.class);
 	}
 
 	private JPanel getSeedPanel() {
@@ -98,7 +101,6 @@ public class SeedInputPanel extends WorkflowPanel {
 				return null;
 			}
 
-			AddressManager addressManager = new ColdWalletService().getAddressManager();
 			addressManager.setStyle(wordCountSelectionPanel == null ? AddressStyle.Shelley : wordCountSelectionPanel.getWalletType());
 
 			String privateKey = addressManager.generatePrivateKey(seed);

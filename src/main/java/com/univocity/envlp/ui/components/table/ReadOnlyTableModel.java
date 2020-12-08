@@ -1,4 +1,4 @@
-package com.univocity.envlp.ui.components;
+package com.univocity.envlp.ui.components.table;
 
 import javax.swing.table.*;
 import java.util.*;

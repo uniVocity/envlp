@@ -1,0 +1,21 @@
+CREATE TABLE wallet_snapshot (
+
+	id BIGINT NOT NULL AUTO_INCREMENT,
+	token_id BIGINT NOT NULL,
+
+	name VARCHAR(255) NOT NULL,
+	external_wallet_id VARCHAR(255),
+	external_wallet_provider_id BIGINT,
+	format_id BIGINT,
+
+	account_balance DECIMAL(36,18) NOT NULL DEFAULT 0.0,
+	rewards_balance DECIMAL(36,18),
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+
+    CONSTRAINT wallet_pk PRIMARY KEY (id),
+    CONSTRAINT wallet_name_uq UNIQUE (name),
+    CONSTRAINT token_fk FOREIGN KEY (token_id) REFERENCES token(id),
+    CONSTRAINT wallet_format_fk FOREIGN KEY (format_id) REFERENCES wallet_format(id)
+);

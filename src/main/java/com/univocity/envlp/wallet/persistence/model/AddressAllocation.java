@@ -1,4 +1,4 @@
-package com.univocity.envlp.wallet;
+package com.univocity.envlp.wallet.persistence.model;
 
 import java.time.*;
 

@@ -1,0 +1,15 @@
+CREATE TABLE wallet_format (
+
+	id BIGINT NOT NULL AUTO_INCREMENT,
+	token_id BIGINT NOT NULL,
+
+	name VARCHAR(127) NOT NULL,
+	description CLOB,
+
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+
+    CONSTRAINT wallet_format_pk PRIMARY KEY (id),
+    CONSTRAINT wallet_format_uq UNIQUE (token_id, name),
+    CONSTRAINT token_format_fk FOREIGN KEY (token_id) REFERENCES token(id)
+);

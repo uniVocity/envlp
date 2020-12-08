@@ -1,10 +1,12 @@
 package com.univocity.envlp.ui.wallet.actions;
 
 import com.github.weisj.darklaf.components.*;
+import com.univocity.envlp.*;
 import com.univocity.envlp.database.*;
 import com.univocity.envlp.ui.*;
-import com.univocity.envlp.ui.components.*;
+import com.univocity.envlp.ui.components.table.*;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 import com.univocity.envlp.wallet.report.*;
 
 import javax.swing.*;
@@ -47,22 +49,22 @@ public class PublicRootKeysPanel extends JPanel {
 		return rootKeyTableModel;
 	}
 
-	public void setWallet(ColdWallet wallet) {
+	public void setWallet(WalletSnapshot wallet) {
 		while (getRootKeyTableModel().getRowCount() > 0) {
 			getRootKeyTableModel().removeRow(0);
 		}
 
 		if (wallet != null) {
-			reportDAO.getAccountReport(wallet).forEach(row -> getRootKeyTableModel().addRow(row));
+			reportDAO.getWalletAccountUsageReport(wallet).forEach(row -> getRootKeyTableModel().addRow(row));
 		}
 	}
 
 	public static void main(String... args) {
 		Database.initTest();
 
-		ColdWalletService service = new ColdWalletService();
+		WalletSnapshotService service = App.get(WalletSnapshotService.class);
 		String seed = service.generateSeed();
-		ColdWallet wallet = service.createNewWallet("test", seed);
+		WalletSnapshot wallet = service.createNewWallet("test", seed);
 
 		service.addAccountFromSeed(wallet, seed, 1);
 		service.addAccountFromSeed(wallet, seed, 2);

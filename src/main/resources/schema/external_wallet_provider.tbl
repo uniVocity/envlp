@@ -1,0 +1,16 @@
+CREATE TABLE external_wallet_provider (
+
+	id BIGINT NOT NULL AUTO_INCREMENT,
+
+	class_name VARCHAR(1023) NOT NULL,
+	name VARCHAR(255) NOT NULL,
+	version VARCHAR(255),
+	description CLOB,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+
+	CONSTRAINT external_wallet_provider_pk PRIMARY KEY (id),
+	CONSTRAINT external_wallet_provider_uq UNIQUE (class_name)
+);
+

@@ -1,29 +1,37 @@
 package com.univocity.envlp.wallet;
 
-import com.univocity.cardano.wallet.builders.server.*;
 import com.univocity.cardano.wallet.builders.wallets.*;
+import com.univocity.envlp.wallet.persistence.model.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
 import java.util.*;
 
+@Service
 public class WalletService {
 
-	private final ColdWalletService coldWalletService;
-	private final HotWalletService hotWalletService;
+	private final WalletSnapshotService walletSnapshotService;
+	private final ExternalWalletService localWalletService;
 
-	public WalletService(RemoteWalletServer server) {
-		this.coldWalletService = new ColdWalletService();
-		this.hotWalletService = new HotWalletService(server);
+	@Autowired
+	public WalletService(WalletSnapshotService walletSnapshotService, ExternalWalletService externalWalletService) {
+		this.walletSnapshotService = walletSnapshotService;
+		this.localWalletService = externalWalletService;
 	}
 
-	public ColdWallet createWallet(String name, String seed, String password) {
-		ColdWallet cold = coldWalletService.createNewWallet(name, seed);
-		Wallet hot = hotWalletService.createWallet(name, seed, password);
-		coldWalletService.associateHotWallet(cold, hot);
-		return cold;
+	public WalletSnapshot createWallet(String name, String seed, String password) {
+		WalletSnapshot snapshot = walletSnapshotService.createNewWallet(name, seed);
+		Wallet localWallet = localWalletService.createWallet(name, seed, password);
+		walletSnapshotService.associateLocalWallet(snapshot, localWallet);
+		return snapshot;
 	}
 
 
-	public List<ColdWallet> loadWallets() {
-		return coldWalletService.loadWallets();
+	public List<WalletSnapshot> loadWallets() {
+		return walletSnapshotService.loadWallets();
 	}
+
+//	public Wallet getWallet(){
+//
+//	}
 }

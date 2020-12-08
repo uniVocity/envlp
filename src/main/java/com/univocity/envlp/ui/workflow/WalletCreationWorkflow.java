@@ -1,10 +1,12 @@
 package com.univocity.envlp.ui.workflow;
 
 import com.univocity.cardano.wallet.common.*;
+import com.univocity.envlp.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.utils.Utils;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 import org.apache.commons.lang3.*;
 
 import javax.swing.*;
@@ -39,7 +41,7 @@ public class WalletCreationWorkflow extends JPanel {
 	private JButton backButton;
 	private JPanel navigationPanel;
 	private final Stack<String> steps = new Stack<>();
-	private final Consumer<ColdWallet> workflowEndAction;
+	private final Consumer<WalletSnapshot> workflowEndAction;
 	private final BiConsumer<String, String> workflowStepDescription;
 	private WalletSetupPanel walletSetupPanel;
 	private WalletPasswordPanel walletPasswordPanel;
@@ -51,8 +53,11 @@ public class WalletCreationWorkflow extends JPanel {
 	private Map<String, WorkflowPanel> panels = new HashMap<>();
 	private DisabledGlassPane glassPane;
 
-	public WalletCreationWorkflow(Consumer<ColdWallet> workflowEndAction, BiConsumer<String, String> workflowStepDescription) {
+	private WalletSnapshotService service;
+
+	public WalletCreationWorkflow(Consumer<WalletSnapshot> workflowEndAction, BiConsumer<String, String> workflowStepDescription) {
 		super(new BorderLayout());
+		service = App.get(WalletSnapshotService.class);
 		this.add(getCardPanel(), BorderLayout.CENTER);
 		this.add(getNavigationPanel(), BorderLayout.SOUTH);
 		this.workflowEndAction = workflowEndAction;
@@ -242,7 +247,7 @@ public class WalletCreationWorkflow extends JPanel {
 
 	private void createWallet() {
 		Thread thread = new Thread(() -> {
-			ColdWallet[] wallet = new ColdWallet[1];
+			WalletSnapshot[] wallet = new WalletSnapshot[1];
 			try {
 				String walletName = walletSetupPanel.getWalletName();
 				String seed = String.valueOf(panels.get(steps.peek()).getValue());
@@ -250,7 +255,6 @@ public class WalletCreationWorkflow extends JPanel {
 
 				getDisabledGlassPane().activate("Setting up wallet " + walletName + "...");
 
-				ColdWalletService service = new ColdWalletService();
 				wallet[0] = service.createNewWallet(walletName, seed);
 
 				service.addAccountsFromSeed(wallet[0], seed, 10);

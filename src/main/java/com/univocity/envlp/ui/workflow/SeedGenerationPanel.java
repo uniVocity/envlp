@@ -1,10 +1,11 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.cardano.wallet.common.*;
+import com.univocity.envlp.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.*;
 import com.univocity.envlp.ui.components.labels.*;
-import com.univocity.envlp.wallet.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,9 +14,10 @@ public class SeedGenerationPanel extends WorkflowPanel {
 
 	private JPanel seedPanel;
 	private JTextArea seedTextArea;
+	private final AddressManager addressManager;
 
 	public SeedGenerationPanel() {
-
+		addressManager = App.get(AddressManager.class);
 	}
 
 	private JPanel getSeedPanel() {
@@ -38,7 +40,7 @@ public class SeedGenerationPanel extends WorkflowPanel {
 	}
 
 	private void generateSeedPhrase() {
-		String seed = new ColdWalletService().getAddressManager().generateSeed();
+		String seed = addressManager.generateSeed();
 		String[] words = seed.split(" ");
 
 		StringBuilder tmp = new StringBuilder();

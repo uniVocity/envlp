@@ -2,19 +2,26 @@ package com.univocity.envlp.wallet;
 
 import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.cardano.wallet.builders.wallets.*;
-import com.univocity.envlp.*;
+import com.univocity.envlp.wallet.persistence.dao.*;
+import com.univocity.envlp.wallet.persistence.model.*;
 import org.apache.commons.lang3.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
 import java.util.*;
 
-public class ColdWalletService {
+@Service
+public class WalletSnapshotService {
 
-	private final WalletDAO walletDAO = new WalletDAO();
-	private final AddressAllocationDAO addressAllocationDAO = new AddressAllocationDAO();
+	private final WalletDAO walletDAO;
+	private final AddressAllocationDAO addressAllocationDAO;
 	private final AddressManager addressManager;
 
-	public ColdWalletService() {
-		addressManager = new AddressManager(Configuration.getInstance().getCardanoToolsDirPath());
+	@Autowired
+	public WalletSnapshotService(AddressManager addressManager, WalletDAO walletDAO, AddressAllocationDAO addressAllocationDAO) {
+		this.addressManager = addressManager;
+		this.walletDAO = walletDAO;
+		this.addressAllocationDAO = addressAllocationDAO;
 	}
 
 	public AddressManager getAddressManager() {
@@ -25,33 +32,33 @@ public class ColdWalletService {
 		return addressManager.generateSeed();
 	}
 
-	public List<ColdWallet> loadWallets(){
+	public List<WalletSnapshot> loadWallets() {
 		return walletDAO.loadWallets();
 	}
 
-	public ColdWallet createNewWallet(String name, String seed) {
-		ColdWallet wallet = new ColdWallet(name);
+	public WalletSnapshot createNewWallet(String name, String seed) {
+		WalletSnapshot wallet = new WalletSnapshot(name);
 
 		final String privateKey = addressManager.generatePrivateKey(seed);
 		wallet = addAccount(wallet, privateKey, 0);
 		return wallet;
 	}
 
-	public ColdWallet addAccountFromSeed(ColdWallet wallet, String seed, long accountIndex) {
+	public WalletSnapshot addAccountFromSeed(WalletSnapshot wallet, String seed, long accountIndex) {
 		return addAccount(wallet, addressManager.generatePrivateKey(seed), accountIndex);
 	}
 
-	public ColdWallet addAccount(ColdWallet wallet, String privateKey, long accountIndex) {
+	public WalletSnapshot addAccount(WalletSnapshot wallet, String privateKey, long accountIndex) {
 		addAccountToWallet(wallet, privateKey, accountIndex);
 		return walletDAO.persistWallet(wallet);
 	}
 
-	public ColdWallet addAccountsFromSeed(ColdWallet wallet, String seed, long accountsToCreate) {
+	public WalletSnapshot addAccountsFromSeed(WalletSnapshot wallet, String seed, long accountsToCreate) {
 		return addAccounts(wallet, addressManager.generatePrivateKey(seed), accountsToCreate);
 	}
 
-	public ColdWallet addAccounts(ColdWallet wallet, String privateKey, long accountsToCreate) {
-		Set<Long> keys = new LinkedHashSet<>(wallet.accounts.keySet());
+	public WalletSnapshot addAccounts(WalletSnapshot wallet, String privateKey, long accountsToCreate) {
+		Set<Long> keys = new LinkedHashSet<>(wallet.getAccounts().keySet());
 		long seq = 0;
 
 		while (accountsToCreate-- > 0) {
@@ -65,28 +72,28 @@ public class ColdWalletService {
 		return wallet;
 	}
 
-	private void addAccountToWallet(ColdWallet wallet, String privateKey, long accountIndex) {
+	private void addAccountToWallet(WalletSnapshot wallet, String privateKey, long accountIndex) {
 		String account = addressManager.generatePublicRootKeyFromPrivateKey(privateKey, accountIndex);
 		wallet.addPublicRootKey(accountIndex, account);
 	}
 
-	public ColdWallet getWalletByName(String walletName) {
+	public WalletSnapshot getWalletByName(String walletName) {
 		return walletDAO.getWalletByName(walletName);
 	}
 
-	public boolean deleteWallet(ColdWallet wallet) {
+	public boolean deleteWallet(WalletSnapshot wallet) {
 		return walletDAO.deleteWallet(wallet);
 	}
 
-	String getPaymentAddress(ColdWallet wallet, long accountIndex, long derivationIndex) {
-		String accountPublicRootKey = wallet.accounts.get(accountIndex);
+	String getPaymentAddress(WalletSnapshot wallet, long accountIndex, long derivationIndex) {
+		String accountPublicRootKey = wallet.getAccounts().get(accountIndex);
 		if (accountPublicRootKey == null) {
 			return null;
 		}
 		return addressManager.generatePaymentAddressFromPublicRootKey(accountPublicRootKey, derivationIndex);
 	}
 
-	public String allocateNextPaymentAddress(ColdWallet wallet, long accountIndex) {
+	public String allocateNextPaymentAddress(WalletSnapshot wallet, long accountIndex) {
 		AddressAllocation allocation = accountIndex >= 0 ? addressAllocationDAO.allocateNextAddress(wallet, accountIndex) : addressAllocationDAO.allocateNextAccount(wallet);
 
 		if (StringUtils.isBlank(allocation.getPaymentAddress())) {
@@ -98,19 +105,19 @@ public class ColdWalletService {
 		return allocation.getPaymentAddress();
 	}
 
-	public String allocateNextPaymentAddress(ColdWallet wallet) {
+	public String allocateNextPaymentAddress(WalletSnapshot wallet) {
 		return allocateNextPaymentAddress(wallet, -1);
 	}
 
-	public List<AddressAllocation> getAddressesForDefaultAccount(ColdWallet wallet) {
+	public List<AddressAllocation> getAddressesForDefaultAccount(WalletSnapshot wallet) {
 		return addressAllocationDAO.getAddresses(wallet, 0);
 	}
 
-	public List<AddressAllocation> getAddressesForAccount(ColdWallet wallet, long accountIndex) {
+	public List<AddressAllocation> getAddressesForAccount(WalletSnapshot wallet, long accountIndex) {
 		return addressAllocationDAO.getAddresses(wallet, accountIndex);
 	}
 
-	public void associateHotWallet(ColdWallet cold, Wallet hot) {
+	public void associateLocalWallet(WalletSnapshot cold, Wallet hot) {
 		walletDAO.associateHotWallet(cold, hot);
 	}
 }

@@ -2,12 +2,17 @@ package com.univocity.envlp.wallet;
 
 import com.univocity.cardano.wallet.builders.server.*;
 import com.univocity.cardano.wallet.builders.wallets.*;
+import com.univocity.envlp.wallet.persistence.model.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
-public class HotWalletService {
+@Service
+public class ExternalWalletService {
 
 	private final RemoteWalletServer server;
 
-	public HotWalletService(RemoteWalletServer server) {
+	@Autowired
+	public ExternalWalletService(RemoteWalletServer server) {
 		this.server = server;
 	}
 
@@ -15,9 +20,9 @@ public class HotWalletService {
 		return server.wallets().create(name).shelley().addressPoolGap(20).fromSeed(seed).password(password);
 	}
 
-	public Wallet loadWallet(ColdWallet wallet) {
-		if (wallet.canBeHot()) {
-			return server.wallets().getById(wallet.getHotWalletId());
+	public Wallet loadWallet(WalletSnapshot wallet) {
+		if (wallet.isExternal()) {
+			return server.wallets().getById(wallet.getExternalWalletId());
 		}
 		return null;
 	}

@@ -3,14 +3,15 @@ package com.univocity.envlp.ui.wallet.actions;
 import com.github.weisj.darklaf.components.border.*;
 import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.persistence.model.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
 import javax.swing.*;
 
 public class WalletDetailsPanel extends JTabbedPane {
 
-	private ColdWalletService walletService;
-
-	private ColdWallet wallet;
+	private WalletSnapshot wallet;
 
 	private ReceivingPanel receivingPanel;
 	private PublicRootKeysPanel publicRootKeysPanel;
@@ -34,14 +35,7 @@ public class WalletDetailsPanel extends JTabbedPane {
 		repaint();
 	}
 
-	private ColdWalletService getWalletService() {
-		if (walletService == null) {
-			walletService = new ColdWalletService();
-		}
-		return walletService;
-	}
-
-	public void setWallet(ColdWallet wallet) {
+	public void setWallet(WalletSnapshot wallet) {
 		this.wallet = wallet;
 		getReceivingPanel().setWallet(wallet);
 		getPublicRootKeysPanel().setWallet(wallet);
@@ -65,7 +59,7 @@ public class WalletDetailsPanel extends JTabbedPane {
 
 	public ReceivingPanel getReceivingPanel() {
 		if (receivingPanel == null) {
-			receivingPanel = new ReceivingPanel(getWalletService());
+			receivingPanel = new ReceivingPanel();
 		}
 		return receivingPanel;
 	}

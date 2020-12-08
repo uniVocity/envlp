@@ -47,6 +47,7 @@
 				<configuration>
 					<source>15</source>
 					<target>15</target>
+					<compilerArgs>--enable-preview</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -259,7 +260,13 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>5.2.8.RELEASE</version>
+			<version>5.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>5.3.1</version>
 		</dependency>
 
 		<dependency>
@@ -267,6 +274,12 @@
 			<artifactId>testng</artifactId>
 			<version>7.3.0</version>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>5.3.1</version>
 		</dependency>
 
 		<dependency>
