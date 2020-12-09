@@ -22,10 +22,11 @@ public class WalletFormatDAO extends BaseDAO {
 	}
 
 	private final RowMapper<WalletFormat> walletFormatRowMapper = (rs, rowNum) -> {
-		Token token = tokenDAO.getTokenById(rs.getLong("token"));
+		Token token = tokenDAO.getTokenById(rs.getLong("token_id"));
 		WalletFormat out = new WalletFormat(rs.getLong("id"), token);
 		out.setName(rs.getString("name"));
 		out.setDescription(rs.getString("description"));
+		out.setSeedLength(rs.getInt("seed_length"));
 		out.setCreatedAt(Utils.toLocalDateTime(rs.getTimestamp("created_at")));
 		out.setUpdatedAt(Utils.toLocalDateTime(rs.getTimestamp("updated_at")));
 		return out;
@@ -33,15 +34,16 @@ public class WalletFormatDAO extends BaseDAO {
 
 	public WalletFormat persistWalletFormat(WalletFormat walletFormat) {
 		Map<String, Object> data = new LinkedHashMap<>();
-		data.put("id", walletFormat.getId());
 		data.put("token_id", walletFormat.getToken().getId());
 		data.put("name", walletFormat.getName());
 		data.put("description", walletFormat.getDescription());
+		data.put("seed_length", walletFormat.getSeedLength());
 
 		long id = walletFormat.getId();
 		if (id == 0) {
 			id = db().insertReturningKey("wallet_format", "id", data).longValue();
 		} else {
+			data.put("id", walletFormat.getId());
 			db().update("wallet_format", data, new String[]{"id"});
 		}
 		return getWalletFormatById(id);

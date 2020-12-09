@@ -9,9 +9,14 @@ public class WalletFormat {
 
 	private String name;
 	private String description;
+	private int seedLength;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+
+	public WalletFormat(Token token) {
+		this(0, token);
+	}
 
 	public WalletFormat(long id, Token token) {
 		this.id = id;
@@ -43,6 +48,14 @@ public class WalletFormat {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public int getSeedLength() {
+		return seedLength;
+	}
+
+	public void setSeedLength(int seedLength) {
+		this.seedLength = seedLength;
 	}
 
 	public LocalDateTime getCreatedAt() {

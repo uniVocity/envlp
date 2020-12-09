@@ -37,7 +37,7 @@ public class TokenDAOTest extends BaseTest {
 		assertNotEquals(inDb.getUpdatedAt(), token.getUpdatedAt());
 	}
 
-	private void assertEquality(Token inDb, Token token){
+	void assertEquality(Token inDb, Token token){
 		assertEquals(inDb.getId(), token.getId());
 		assertEquals(inDb.getAmountPattern(), token.getAmountPattern());
 		assertEquals(inDb.getCreatedAt(), token.getCreatedAt());
