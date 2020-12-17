@@ -1,5 +1,6 @@
 package com.univocity.envlp.wallet.persistence.dao;
 
+import com.univocity.envlp.stamp.*;
 import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.slf4j.*;
@@ -21,9 +22,9 @@ public class WalletFormatDAO extends BaseDAO {
 		this.tokenDAO = tokenDAO;
 	}
 
-	private final RowMapper<WalletFormat> walletFormatRowMapper = (rs, rowNum) -> {
-		Token token = tokenDAO.getTokenById(rs.getLong("token_id"));
-		WalletFormat out = new WalletFormat(rs.getLong("id"), token);
+	private final RowMapper<EnvlpWalletFormat> walletFormatRowMapper = (rs, rowNum) -> {
+		EnvlpToken token = tokenDAO.getTokenById(rs.getLong("token_id"));
+		EnvlpWalletFormat out = new EnvlpWalletFormat(rs.getLong("id"), token);
 		out.setName(rs.getString("name"));
 		out.setDescription(rs.getString("description"));
 		out.setSeedLength(rs.getInt("seed_length"));
@@ -32,7 +33,7 @@ public class WalletFormatDAO extends BaseDAO {
 		return out;
 	};
 
-	public WalletFormat persistWalletFormat(WalletFormat walletFormat) {
+	public EnvlpWalletFormat persistWalletFormat(EnvlpWalletFormat walletFormat) {
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("token_id", walletFormat.getToken().getId());
 		data.put("name", walletFormat.getName());
@@ -49,11 +50,16 @@ public class WalletFormatDAO extends BaseDAO {
 		return getWalletFormatById(id);
 	}
 
-	public WalletFormat getWalletFormatById(long id) {
+	public EnvlpWalletFormat getWalletFormatById(long id) {
 		return db().queryForObject("SELECT * FROM wallet_format WHERE id = ?", walletFormatRowMapper, id);
 	}
 
-	public List<WalletFormat> getWalletFormatsForToken(Token token) {
+	public List<EnvlpWalletFormat> getWalletFormatsForToken(EnvlpToken token) {
 		return db().query("SELECT * FROM wallet_format WHERE token_id = ?", walletFormatRowMapper, token.getId());
+	}
+
+	public EnvlpWalletFormat loadWalletFormat(WalletFormat walletFormat) {
+		EnvlpToken token = tokenDAO.getTokenByTicker(walletFormat.getToken().getTicker());
+		return db().queryForObject("SELECT * FROM wallet_format WHERE token_id = ? AND name = ? AND seed_length = ?", walletFormatRowMapper, token.getId(), walletFormat.getName(), walletFormat.getSeedLength());
 	}
 }

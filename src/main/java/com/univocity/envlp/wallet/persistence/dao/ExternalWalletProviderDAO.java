@@ -43,4 +43,9 @@ public class ExternalWalletProviderDAO extends BaseDAO {
 	public ExternalWalletProvider getWalletProviderById(long id) {
 		return db().queryForOptionalObject("SELECT * FROM external_wallet_provider WHERE id = ?", rowMapper, id);
 	}
+
+	public ExternalWalletProvider getWalletProviderByClassName(String className) {
+		return db().queryForOptionalObject("SELECT * FROM external_wallet_provider WHERE class_name = ?", rowMapper, className);
+	}
+
 }

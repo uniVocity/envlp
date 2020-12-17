@@ -1,7 +1,7 @@
 package com.univocity.envlp.wallet.persistence.dao;
 
+import com.univocity.envlp.wallet.cardano.*;
 import com.univocity.envlp.wallet.persistence.model.*;
-import org.springframework.beans.factory.annotation.*;
 import org.testng.annotations.*;
 
 import java.util.*;
@@ -10,12 +10,13 @@ import static org.testng.Assert.*;
 
 public class WalletDAOTest extends BaseTest {
 
-	@Autowired
-	private WalletDAO walletDAO;
-
 	private WalletSnapshot newWallet(String name) {
-		WalletSnapshot out = new WalletSnapshot(name);
 
+		EnvlpToken token = tokenDAO.getTokenByTicker("ADA");
+		EnvlpWalletFormat walletFormat = walletFormatDAO.getWalletFormatsForToken(token).get(0);
+		ExternalWalletProvider externalWalletProvider = externalWalletProviderDAO.getWalletProviderByClassName(CardanoWalletBackendService.class.getName());
+
+		WalletSnapshot out = new WalletSnapshot(name, walletFormat, externalWalletProvider);
 
 		out.addPublicRootKey(0, name + "_1");
 		out.addPublicRootKey(1, name + "_2");
@@ -78,13 +79,13 @@ public class WalletDAOTest extends BaseTest {
 		assertEquals(wallet.getAccounts().get(4L), "lololo");
 
 		WalletSnapshot persisted = walletDAO.persistWallet(wallet);
-		assertTrue(persisted == wallet);
+		assertNotSame(persisted, wallet);
 		assertEquals(wallet.getName(), "wall2");
 		assertEquals(wallet.getAccounts().get(3L), "lalala");
 		assertEquals(wallet.getAccounts().get(4L), "lololo");
 
 		WalletSnapshot fromDb = walletDAO.loadWallet(2);
-		assertTrue(fromDb != wallet);
+		assertNotSame(fromDb, wallet);
 		assertEquals(fromDb.getName(), "wall2");
 		assertEquals(fromDb.getAccounts().get(3L), "lalala");
 		assertEquals(fromDb.getAccounts().get(4L), "lololo");

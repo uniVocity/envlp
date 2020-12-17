@@ -1,7 +1,7 @@
 package com.univocity.envlp.wallet;
 
 import com.univocity.cardano.wallet.addresses.*;
-import com.univocity.cardano.wallet.builders.wallets.*;
+import com.univocity.envlp.stamp.*;
 import com.univocity.envlp.wallet.persistence.dao.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.apache.commons.lang3.*;
@@ -15,6 +15,8 @@ public class WalletSnapshotService {
 
 	private final WalletDAO walletDAO;
 	private final AddressAllocationDAO addressAllocationDAO;
+
+	//TODO: refactor this out into a cardano-specific package
 	private final AddressManager addressManager;
 
 	@Autowired
@@ -36,8 +38,8 @@ public class WalletSnapshotService {
 		return walletDAO.loadWallets();
 	}
 
-	public WalletSnapshot createNewWallet(String name, String seed) {
-		WalletSnapshot wallet = new WalletSnapshot(name);
+	public WalletSnapshot createNewWallet(String name, String seed, EnvlpWalletFormat format, ExternalWalletProvider externalWalletProvider) {
+		WalletSnapshot wallet = new WalletSnapshot(name, format, externalWalletProvider);
 
 		final String privateKey = addressManager.generatePrivateKey(seed);
 		wallet = addAccount(wallet, privateKey, 0);
@@ -117,7 +119,7 @@ public class WalletSnapshotService {
 		return addressAllocationDAO.getAddresses(wallet, accountIndex);
 	}
 
-	public void associateLocalWallet(WalletSnapshot cold, Wallet hot) {
-		walletDAO.associateHotWallet(cold, hot);
+	public void associateLocalWallet(WalletSnapshot snapshot, ExternalWallet external) {
+		walletDAO.associateExternalWallet(snapshot, external);
 	}
 }

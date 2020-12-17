@@ -1,28 +1,17 @@
 package com.univocity.envlp.wallet.persistence.dao;
 
 import com.univocity.envlp.wallet.persistence.model.*;
-import org.springframework.beans.factory.annotation.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
 
 public class WalletFormatDAOTest extends BaseTest{
 
-	@Autowired
-	WalletFormatDAO walletFormatDAO;
-
-	@Autowired
-	TokenDAO tokenDAO;
-
 	@Test
 	public void testPersistence() {
-		TokenDAOTest tokenTest = new TokenDAOTest();
-		tokenTest.tokenDAO = tokenDAO;
-		tokenTest.testPersistToken();
+		EnvlpToken token = tokenDAO.getTokenByTicker("ADA");
 
-		Token token = tokenDAO.listTokens().get(0);
-
-		WalletFormat walletFormat = new WalletFormat(token);
+		EnvlpWalletFormat walletFormat = new EnvlpWalletFormat(token);
 		walletFormat.setDescription("Cardano Shelley Wallet Format");
 		walletFormat.setName("Shelley");
 		walletFormat.setSeedLength(24);
@@ -35,7 +24,7 @@ public class WalletFormatDAOTest extends BaseTest{
 		assertNotNull(walletFormat.getUpdatedAt());
 		assertEquals(walletFormat.getSeedLength(), 24);
 
-		WalletFormat inDb = walletFormatDAO.getWalletFormatById(walletFormat.getId());
+		EnvlpWalletFormat inDb = walletFormatDAO.getWalletFormatById(walletFormat.getId());
 		assertNotNull(inDb);
 		assertEquality(inDb, walletFormat);
 		assertEquals(inDb.getUpdatedAt(), walletFormat.getUpdatedAt());
@@ -46,10 +35,10 @@ public class WalletFormatDAOTest extends BaseTest{
 		assertEquality(inDb, walletFormat);
 		assertNotEquals(inDb.getUpdatedAt(), walletFormat.getUpdatedAt());
 
-		tokenTest.assertEquality(walletFormat.getToken(), token);
+		new TokenDAOTest().assertEquality(walletFormat.getToken(), token);
 	}
 
-	void assertEquality(WalletFormat inDb, WalletFormat token){
+	void assertEquality(EnvlpWalletFormat inDb, EnvlpWalletFormat token){
 		assertEquals(inDb.getId(), token.getId());
 		assertEquals(inDb.getCreatedAt(), token.getCreatedAt());
 		assertEquals(inDb.getName(), token.getName());

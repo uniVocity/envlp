@@ -1,6 +1,5 @@
 package com.univocity.envlp.wallet.persistence.dao;
 
-import com.univocity.envlp.database.*;
 import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.slf4j.*;
@@ -14,8 +13,8 @@ public class TokenDAO extends BaseDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(TokenDAO.class);
 
-	private static final RowMapper<Token> tokenRowMapper = (rs, rowNum) -> {
-		Token out = new Token(rs.getLong("id"));
+	private static final RowMapper<EnvlpToken> tokenRowMapper = (rs, rowNum) -> {
+		EnvlpToken out = new EnvlpToken(rs.getLong("id"));
 		out.setName(rs.getString("name"));
 		out.setTicker(rs.getString("ticker"));
 		out.setMonetarySymbol(rs.getString("monetary_symbol"));
@@ -27,7 +26,7 @@ public class TokenDAO extends BaseDAO {
 		return out;
 	};
 
-	public Token persistToken(Token token) {
+	public EnvlpToken persistToken(EnvlpToken token) {
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("name", token.getName());
 		data.put("ticker", token.getTicker());
@@ -46,11 +45,15 @@ public class TokenDAO extends BaseDAO {
 		return getTokenById(id);
 	}
 
-	public Token getTokenById(long id) {
+	public EnvlpToken getTokenById(long id) {
 		return db().queryForObject("SELECT * FROM token WHERE id = ?", tokenRowMapper, id);
 	}
 
-	public List<Token> listTokens() {
+	public EnvlpToken getTokenByTicker(String ticker) {
+		return db().queryForObject("SELECT * FROM token WHERE ticker = ?", tokenRowMapper, ticker);
+	}
+
+	public List<EnvlpToken> listTokens() {
 		return db().query("SELECT * FROM token", tokenRowMapper);
 	}
 }

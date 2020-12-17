@@ -8,15 +8,12 @@ import static org.testng.Assert.*;
 
 public class ExternalWalletProviderDAOTest extends BaseTest{
 
-	@Autowired
-	ExternalWalletProviderDAO externalWalletProviderDAO;
-
 	@Test
 	public void testPersistence() {
 		ExternalWalletProvider provider = new ExternalWalletProvider();
 		provider.setDescription("Cardano Wallet backend (same as daedalus)");
 		provider.setName("Cardano Wallet Backend");
-		provider.setClassName("com.univocity.envlp.wallet.CardanoWalletBackendService");
+		provider.setClassName("com.univocity.envlp.wallet.cardano.CardanoWalletBackendService");
 		provider.setVersion("2020-11-29-SNAPSHOT");
 
 		provider = externalWalletProviderDAO.persist(provider);

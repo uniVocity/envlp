@@ -1,10 +1,11 @@
 package com.univocity.envlp.wallet.persistence.model;
 
-import java.math.*;
-import java.text.*;
+
+import com.univocity.envlp.stamp.*;
+
 import java.time.*;
 
-public class Token {
+public class EnvlpToken implements Token {
 
 	private final long id;
 	private String name;
@@ -17,13 +18,11 @@ public class Token {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private ThreadLocal<DecimalFormat> priceFormatter;
-
-	public Token() {
+	public EnvlpToken() {
 		this(0);
 	}
 
-	public Token(long id) {
+	public EnvlpToken(long id) {
 		this.id = id;
 	}
 
@@ -45,7 +44,6 @@ public class Token {
 
 	public void setAmountPattern(String amountPattern) {
 		this.amountPattern = amountPattern;
-		this.priceFormatter = ThreadLocal.withInitial(() -> new DecimalFormat(amountPattern));
 	}
 
 	public int getDecimals() {
@@ -96,20 +94,22 @@ public class Token {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getFormattedAmount(BigDecimal amount) {
-		if (amount == null) {
-			amount = BigDecimal.ZERO;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		EnvlpToken that = (EnvlpToken) o;
+
+		if (id == 0 || that.id == 0) {
+			return Token.super.equals(that);
 		}
-		if (priceFormatter == null) {
-			return round(amount).toPlainString();
-		}
-		return priceFormatter.get().format(amount);
+
+		return id == that.id;
 	}
 
-	private BigDecimal round(BigDecimal amount) {
-		if (amount.scale() != this.decimals) {
-			amount = amount.setScale(decimals, RoundingMode.HALF_EVEN);
-		}
-		return amount;
+	@Override
+	public int hashCode() {
+		return (int) (id ^ (id >>> 32));
 	}
 }

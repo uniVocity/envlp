@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="CoreComponentsSuite" verbose="2">
+	<test name="testSequence" preserve-order="true" parallel="false">
+		<classes>
+			<class name="com.univocity.envlp.wallet.persistence.dao.TokenDAOTest"/>
+			<class name="com.univocity.envlp.wallet.persistence.dao.ExternalWalletProviderDAOTest"/>
+			<class name="com.univocity.envlp.wallet.persistence.dao.WalletFormatDAOTest"/>
+			<class name="com.univocity.envlp.wallet.persistence.dao.WalletDAOTest"/>
+			<class name="com.univocity.envlp.wallet.WalletServiceTest"/>
+		</classes>
+	</test>
+</suite>

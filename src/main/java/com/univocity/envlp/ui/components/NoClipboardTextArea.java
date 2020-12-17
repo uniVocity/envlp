@@ -7,6 +7,8 @@ public class NoClipboardTextArea extends JTextArea {
 
 	{
 		setTransferHandler(null);
+		setComponentPopupMenu(null);
+		setInheritsPopupMenu(false);
 	}
 
 	public NoClipboardTextArea() {

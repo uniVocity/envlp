@@ -1,10 +1,8 @@
 package com.univocity.envlp.wallet;
 
 import com.univocity.cardano.wallet.addresses.*;
-import com.univocity.envlp.wallet.*;
 import com.univocity.envlp.wallet.persistence.dao.*;
 import com.univocity.envlp.wallet.persistence.model.*;
-import org.springframework.beans.factory.annotation.*;
 import org.testng.annotations.*;
 
 import java.util.*;
@@ -13,13 +11,10 @@ import static org.testng.Assert.*;
 
 public class WalletServiceTest extends BaseTest {
 
-	@Autowired
-	WalletSnapshotService service;
-
 	@Test
 	public void testCreateNewWallet() {
 		String seed = service.generateSeed();
-		WalletSnapshot wallet = service.createNewWallet("wallet from seed", seed);
+		WalletSnapshot wallet = createNewWallet("wallet from seed", seed);
 
 		assertNotNull(wallet);
 		assertNotNull(wallet.getCreatedAt());
@@ -30,7 +25,7 @@ public class WalletServiceTest extends BaseTest {
 		assertNotNull(wallet.getAccounts().get(0L));
 
 		seed = AddressManagerTest.seed;
-		wallet = service.createNewWallet("myWallet", seed);
+		wallet = createNewWallet("myWallet", seed);
 		assertEquals(wallet.getAccounts().get(0L), AddressManagerTest.publicRootKey_0);
 	}
 
@@ -84,7 +79,7 @@ public class WalletServiceTest extends BaseTest {
 	@Test
 	public void testAllocateNextPaymentAddress() {
 		String seed = service.generateSeed();
-		WalletSnapshot wallet = service.createNewWallet("randomWallet2", seed);
+		WalletSnapshot wallet = createNewWallet("randomWallet2", seed);
 
 		//no other accounts registered, will allocate to default account 0
 		String payment1 = service.allocateNextPaymentAddress(wallet);
@@ -135,7 +130,7 @@ public class WalletServiceTest extends BaseTest {
 	@Test
 	public void testAllocateNextPaymentAddressFromAccount() {
 		String seed = service.generateSeed();
-		WalletSnapshot wallet = service.createNewWallet("randomWallet1", seed);
+		WalletSnapshot wallet = createNewWallet("randomWallet1", seed);
 
 		String payment1 = service.allocateNextPaymentAddress(wallet, 0);
 		assertNotNull(payment1);

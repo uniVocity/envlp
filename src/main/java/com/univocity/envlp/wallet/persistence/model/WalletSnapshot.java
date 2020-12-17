@@ -9,12 +9,12 @@ import java.util.*;
 public class WalletSnapshot {
 
 	private final long id;
-	private Token token;
+	private final EnvlpToken token;
 
 	private String name;
 	private String externalWalletId;
-	private ExternalWalletProvider externalWalletProvider;
-	private WalletFormat format;
+	private final ExternalWalletProvider externalWalletProvider;
+	private final EnvlpWalletFormat format;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -25,13 +25,17 @@ public class WalletSnapshot {
 
 	private final Map<Long, String> accounts = new TreeMap<>();
 
-	public WalletSnapshot(String name) {
-		this(0, name);
+	public WalletSnapshot(String name, EnvlpWalletFormat format, ExternalWalletProvider externalWalletProvider) {
+		this(0, name, format, externalWalletProvider);
 	}
 
-	public WalletSnapshot(long id, String name) {
+	public WalletSnapshot(long id, String name, EnvlpWalletFormat format, ExternalWalletProvider externalWalletProvider) {
 		this.id = id;
+		this.token = format.getToken();
+		this.format = format;
+		this.externalWalletProvider = externalWalletProvider;
 		setName(name);
+
 	}
 
 	public void addPublicRootKey(long accountIndex, String publicRootKey) {
@@ -83,20 +87,12 @@ public class WalletSnapshot {
 		return StringUtils.isNotBlank(externalWalletId);
 	}
 
-	public WalletFormat getFormat() {
+	public EnvlpWalletFormat getFormat() {
 		return format;
 	}
 
-	public void setFormat(WalletFormat format) {
-		this.format = format;
-	}
-
-	public Token getToken() {
+	public EnvlpToken getToken() {
 		return token;
-	}
-
-	public void setToken(Token token) {
-		this.token = token;
 	}
 
 	public BigDecimal getTotalBalance() {
@@ -137,10 +133,6 @@ public class WalletSnapshot {
 
 	public ExternalWalletProvider getExternalWalletProvider() {
 		return externalWalletProvider;
-	}
-
-	public void setExternalWalletProvider(ExternalWalletProvider externalWalletProvider) {
-		this.externalWalletProvider = externalWalletProvider;
 	}
 
 	public void setAccountBalance(BigDecimal accountBalance) {

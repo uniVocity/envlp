@@ -1,11 +1,13 @@
 package com.univocity.envlp.wallet.persistence.model;
 
+import com.univocity.envlp.stamp.*;
+
 import java.time.*;
 
-public class WalletFormat {
+public class EnvlpWalletFormat implements WalletFormat {
 
 	private final long id;
-	private Token token;
+	private EnvlpToken token;
 
 	private String name;
 	private String description;
@@ -14,11 +16,11 @@ public class WalletFormat {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public WalletFormat(Token token) {
+	public EnvlpWalletFormat(EnvlpToken token) {
 		this(0, token);
 	}
 
-	public WalletFormat(long id, Token token) {
+	public EnvlpWalletFormat(long id, EnvlpToken token) {
 		this.id = id;
 		if(token == null){
 			throw new IllegalStateException("Token information can't be null");
@@ -30,10 +32,12 @@ public class WalletFormat {
 		return id;
 	}
 
-	public Token getToken() {
+	@Override
+	public EnvlpToken getToken() {
 		return token;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -42,6 +46,7 @@ public class WalletFormat {
 		this.name = name;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -50,6 +55,7 @@ public class WalletFormat {
 		this.description = description;
 	}
 
+	@Override
 	public int getSeedLength() {
 		return seedLength;
 	}
@@ -72,5 +78,24 @@ public class WalletFormat {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		EnvlpWalletFormat that = (EnvlpWalletFormat) o;
+
+		if(id == 0 || that.id == 0){
+			return WalletFormat.super.equals(that);
+		}
+
+		return id == that.id;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) (id ^ (id >>> 32));
 	}
 }

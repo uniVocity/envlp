@@ -3,7 +3,9 @@ package com.univocity.envlp;
 import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.cardano.wallet.builders.server.*;
 import com.univocity.envlp.database.*;
+import com.univocity.envlp.stamp.*;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.cardano.*;
 import com.univocity.envlp.wallet.persistence.dao.*;
 import org.slf4j.*;
 import org.springframework.context.annotation.*;
@@ -63,16 +65,19 @@ public class Dependencies {
 		return new WalletSnapshotService(addressManager(), walletDAO(), addressAllocationDAO());
 	}
 
+	//TODO: refactor to load external wallet support dynamically
 	@Bean
-	public ExternalWalletService externalWalletService() {
-		return new ExternalWalletService(walletServer());
+	public CardanoWalletBackendService externalWalletService() {
+		return new CardanoWalletBackendService(walletServer());
 	}
 
+	//TODO: refactor to load external wallet support dynamically
 	@Bean
 	public WalletService walletService() {
-		return new WalletService(walletSnapshotService(), externalWalletService());
+		return new WalletService(walletSnapshotService(), externalWalletService(), tokenDAO(), walletFormatDAO(), externalWalletProviderDAO());
 	}
 
+	//TODO: refactor to move into CardanoWalletBackendService
 	@Bean
 	public RemoteWalletServer walletServer() {
 		RemoteWalletServer walletServer;

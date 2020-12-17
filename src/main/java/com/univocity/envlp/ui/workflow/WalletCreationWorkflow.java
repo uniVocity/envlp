@@ -1,11 +1,14 @@
 package com.univocity.envlp.ui.workflow;
 
+import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.cardano.wallet.common.*;
 import com.univocity.envlp.*;
 import com.univocity.envlp.ui.*;
 import com.univocity.envlp.ui.components.labels.*;
 import com.univocity.envlp.utils.Utils;
 import com.univocity.envlp.wallet.*;
+import com.univocity.envlp.wallet.cardano.*;
+import com.univocity.envlp.wallet.persistence.dao.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.apache.commons.lang3.*;
 
@@ -255,10 +258,18 @@ public class WalletCreationWorkflow extends JPanel {
 
 				getDisabledGlassPane().activate("Setting up wallet " + walletName + "...");
 
-				wallet[0] = service.createNewWallet(walletName, seed);
+				AddressStyle addressStyle = walletTypeSelectionPanel.getValue();
+				Integer wordCount = wordCountSelectionPanel.getValue();
+				CardanoWalletFormat walletFormat = CardanoWalletFormat.getFormat(addressStyle, wordCount);
 
+				WalletFormatDAO walletFormatDAO = App.get(WalletFormatDAO.class);
+				EnvlpWalletFormat envlpWalletFormat = walletFormatDAO.loadWalletFormat(walletFormat);
+
+				ExternalWalletProviderDAO externalWalletProviderDAO = App.get(ExternalWalletProviderDAO.class);
+				ExternalWalletProvider cardanoWalletProvider = externalWalletProviderDAO.getWalletProviderByClassName(CardanoWalletBackendService.class.getName());
+
+				wallet[0] = service.createNewWallet(walletName, seed, envlpWalletFormat, cardanoWalletProvider);
 				service.addAccountsFromSeed(wallet[0], seed, 10);
-
 				//allocate one address for account 0
 				service.allocateNextPaymentAddress(wallet[0], 0);
 			} catch (Exception error) {

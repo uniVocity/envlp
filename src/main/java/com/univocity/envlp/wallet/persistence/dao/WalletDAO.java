@@ -1,6 +1,6 @@
 package com.univocity.envlp.wallet.persistence.dao;
 
-import com.univocity.cardano.wallet.builders.wallets.*;
+import com.univocity.envlp.stamp.*;
 import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.slf4j.*;
@@ -23,8 +23,6 @@ public class WalletDAO extends BaseDAO {
 
 	private final RowMapper<WalletSnapshot> walletMapper;
 
-
-
 	@Autowired
 	public WalletDAO(AddressAllocationDAO addressAllocationDAO, TokenDAO tokenDAO, ExternalWalletProviderDAO externalWalletProviderDAO, WalletFormatDAO walletFormatDAO) {
 		this.addressAllocationDAO = addressAllocationDAO;
@@ -33,11 +31,12 @@ public class WalletDAO extends BaseDAO {
 		this.walletFormatDAO = walletFormatDAO;
 
 		walletMapper = (rs, rowNum) -> {
-			WalletSnapshot out = new WalletSnapshot(rs.getLong("id"), rs.getString("name"));
-			out.setToken(this.tokenDAO.getTokenById(rs.getLong("token_id")));
+			EnvlpWalletFormat format = walletFormatDAO.getWalletFormatById(rs.getLong("format_id"));
+			ExternalWalletProvider externalWalletProvider = this.externalWalletProviderDAO.getWalletProviderById(rs.getLong("external_wallet_provider_id"));
+
+			WalletSnapshot out = new WalletSnapshot(rs.getLong("id"), rs.getString("name"), format, externalWalletProvider);
 			out.setExternalWalletId(rs.getString("external_wallet_id"));
-			out.setExternalWalletProvider(this.externalWalletProviderDAO.getWalletProviderById(rs.getLong("external_wallet_provider_id")));
-			out.setFormat(walletFormatDAO.getWalletFormatById(rs.getLong("format_id")));
+
 			out.setAccountBalance(rs.getBigDecimal("account_balance"));
 			out.setRewardsBalance(rs.getBigDecimal("rewards_balance"));
 
@@ -76,9 +75,8 @@ public class WalletDAO extends BaseDAO {
 		wallet.getAccounts().forEach((accountIdx, rootKey) -> batch.add(new Object[]{walletId, accountIdx, rootKey}));
 
 		db().batchUpdate("MERGE INTO wallet_account (wallet_id, account_idx, public_root_key) KEY (wallet_id, account_idx) VALUES (?,?,?);", batch);
-		addressAllocationDAO.createDefaultAllocations(wallet);
-
 		wallet = db().queryForObject("SELECT * FROM wallet_snapshot WHERE id = ?", walletMapper, walletId);
+		addressAllocationDAO.createDefaultAllocations(wallet);
 
 		loadAccounts(wallet);
 
@@ -93,7 +91,7 @@ public class WalletDAO extends BaseDAO {
 
 	public List<WalletSnapshot> loadWallets() {
 		Map<Long, WalletSnapshot> wallets = new TreeMap<>();
-		db().query("SELECT w.id, w.name, w.created_at, a.account_idx, a.public_root_key FROM wallet_snapshot w JOIN wallet_account a ON w.id = a.wallet_id", (RowCallbackHandler) rs -> {
+		db().query("SELECT w.*, a.account_idx, a.public_root_key FROM wallet_snapshot w JOIN wallet_account a ON w.id = a.wallet_id", (RowCallbackHandler) rs -> {
 			Long walletId = rs.getLong("id");
 			WalletSnapshot wallet = wallets.computeIfAbsent(walletId, k -> {
 				try {
@@ -115,9 +113,9 @@ public class WalletDAO extends BaseDAO {
 		if (wallet == null) {
 			return;
 		}
-		db().query("SELECT * FROM wallet_account WHERE wallet_id = ?", new Object[]{wallet.getId()}, rs -> {
+		db().query("SELECT * FROM wallet_account WHERE wallet_id = ?", rs -> {
 			wallet.addPublicRootKey(rs.getLong("account_idx"), rs.getString("public_root_key"));
-		});
+		}, wallet.getId());
 	}
 
 	public boolean deleteWallet(Long walletId) {
@@ -141,8 +139,8 @@ public class WalletDAO extends BaseDAO {
 		return out;
 	}
 
-	public void associateHotWallet(WalletSnapshot walletSnapshot, Wallet externalWallet) {
+	public void associateExternalWallet(WalletSnapshot walletSnapshot, ExternalWallet externalWallet) {
 		walletSnapshot.setExternalWalletId(externalWallet.id());
-		db().update("UPDATE wallet_snapshot SET external_wallet_id = ? WHERE id = ?", new Object[]{externalWallet.id(), walletSnapshot.getId()});
+		db().update("UPDATE wallet_snapshot SET external_wallet_id = ? WHERE id = ?", externalWallet.id(), walletSnapshot.getId());
 	}
 }

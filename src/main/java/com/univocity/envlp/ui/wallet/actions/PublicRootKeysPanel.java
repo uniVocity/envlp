@@ -64,7 +64,7 @@ public class PublicRootKeysPanel extends JPanel {
 
 		WalletSnapshotService service = App.get(WalletSnapshotService.class);
 		String seed = service.generateSeed();
-		WalletSnapshot wallet = service.createNewWallet("test", seed);
+		WalletSnapshot wallet = service.createNewWallet("test", seed, new EnvlpWalletFormat(new EnvlpToken()), new ExternalWalletProvider());
 
 		service.addAccountFromSeed(wallet, seed, 1);
 		service.addAccountFromSeed(wallet, seed, 2);

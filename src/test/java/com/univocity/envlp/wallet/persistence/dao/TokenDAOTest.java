@@ -1,19 +1,15 @@
 package com.univocity.envlp.wallet.persistence.dao;
 
 import com.univocity.envlp.wallet.persistence.model.*;
-import org.springframework.beans.factory.annotation.*;
 import org.testng.annotations.*;
 
 import static org.testng.Assert.*;
 
 public class TokenDAOTest extends BaseTest {
 
-	@Autowired
-	TokenDAO tokenDAO;
-
 	@Test
 	public void testPersistToken() {
-		Token token = new Token();
+		EnvlpToken token = new EnvlpToken();
 		token.setDescription("Cardano is blah blah");
 		token.setName("Cardano");
 		token.setTicker("ADA");
@@ -26,7 +22,7 @@ public class TokenDAOTest extends BaseTest {
 		assertNotNull(token.getCreatedAt());
 		assertNotNull(token.getUpdatedAt());
 
-		Token inDb = tokenDAO.getTokenById(token.getId());
+		EnvlpToken inDb = tokenDAO.getTokenById(token.getId());
 		assertNotNull(inDb);
 		assertEquality(inDb, token);
 		assertEquals(inDb.getUpdatedAt(), token.getUpdatedAt());
@@ -37,7 +33,7 @@ public class TokenDAOTest extends BaseTest {
 		assertNotEquals(inDb.getUpdatedAt(), token.getUpdatedAt());
 	}
 
-	void assertEquality(Token inDb, Token token){
+	void assertEquality(EnvlpToken inDb, EnvlpToken token){
 		assertEquals(inDb.getId(), token.getId());
 		assertEquals(inDb.getAmountPattern(), token.getAmountPattern());
 		assertEquals(inDb.getCreatedAt(), token.getCreatedAt());
