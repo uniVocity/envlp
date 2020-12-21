@@ -13,8 +13,6 @@ import com.univocity.envlp.utils.*;
 import com.univocity.envlp.wallet.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.context.*;
-import org.springframework.context.annotation.*;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.*;
@@ -86,18 +84,16 @@ public class Main {
 	private JPanel themeSettingsPanel;
 
 	private static boolean running = false;
-	private EpochDetailsPanel epochDetailsPanel;
+
 	private static Main instance;
 
 	private WalletService walletService;
 
-	private RemoteWalletServer walletServer;
 
 	@Autowired
-	Main(WalletConfiguration configuration, WalletService walletService, RemoteWalletServer walletServer) {
+	Main(WalletConfiguration configuration, WalletService walletService) {
 		this.config = configuration;
 		this.walletService = walletService;
-		this.walletServer = walletServer;
 	}
 
 	private void initialize(){
@@ -119,20 +115,7 @@ public class Main {
 		}
 		openWalletsTab();
 		frame.setJMenuBar(new MainMenu(this));
-		frame.add(getEpochDetailsPanel(), BorderLayout.SOUTH);
-
-		if (walletServer instanceof EmbeddedWalletServer) {
-			EmbeddedWalletServer server = (EmbeddedWalletServer) walletServer;
-			cardanoNodeControlPanel = intializeProcess(server.getNodeManager());
-			cardanoWalletControlPanel = intializeProcess(server.getWalletManager());
-		}
-	}
-
-
-	private ProcessControlPanel intializeProcess(ProcessManager process) {
-		ProcessControlPanel out = new ProcessControlPanel(process);
-		out.startProcess();
-		return out;
+		//frame.add(getEpochDetailsPanel(), BorderLayout.SOUTH);
 	}
 
 	private JTabbedPane getApplicationTabs() {
@@ -200,13 +183,6 @@ public class Main {
 
 	public LogPanel getApplicationLogPanel() {
 		return applicationLogPanel;
-	}
-
-	public EpochDetailsPanel getEpochDetailsPanel() {
-		if (epochDetailsPanel == null) {
-			epochDetailsPanel = new EpochDetailsPanel(walletServer);
-		}
-		return epochDetailsPanel;
 	}
 
 	public static boolean isRunning() {
