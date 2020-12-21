@@ -1,6 +1,6 @@
 package com.univocity.envlp.wallet.persistence.model;
 
-import com.univocity.envlp.stamp.*;
+import com.univocity.envlp.wallet.definition.*;
 
 import java.time.*;
 

@@ -1,7 +1,7 @@
 package com.univocity.envlp.wallet;
 
 import com.univocity.cardano.wallet.addresses.*;
-import com.univocity.envlp.stamp.*;
+import com.univocity.envlp.wallet.definition.*;
 import com.univocity.envlp.wallet.persistence.dao.*;
 import com.univocity.envlp.wallet.persistence.model.*;
 import org.apache.commons.lang3.*;

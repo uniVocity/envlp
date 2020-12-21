@@ -1,6 +1,7 @@
 package com.univocity.envlp.wallet.cardano;
 
-import com.univocity.envlp.stamp.*;
+
+import com.univocity.envlp.wallet.definition.*;
 
 public class CardanoWalletRestorationDetails implements WalletRestorationDetails {
 

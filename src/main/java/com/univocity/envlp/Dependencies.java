@@ -3,7 +3,6 @@ package com.univocity.envlp;
 import com.univocity.cardano.wallet.addresses.*;
 import com.univocity.cardano.wallet.builders.server.*;
 import com.univocity.envlp.database.*;
-import com.univocity.envlp.stamp.*;
 import com.univocity.envlp.wallet.*;
 import com.univocity.envlp.wallet.cardano.*;
 import com.univocity.envlp.wallet.persistence.dao.*;

@@ -1,6 +1,7 @@
 package com.univocity.envlp.wallet.cardano;
 
-import com.univocity.envlp.stamp.*;
+
+import com.univocity.envlp.wallet.definition.*;
 
 final class ADAToken implements Token {
 

@@ -1,7 +1,7 @@
 package com.univocity.envlp.wallet.cardano;
 
 import com.univocity.cardano.wallet.addresses.*;
-import com.univocity.envlp.stamp.*;
+import com.univocity.envlp.wallet.definition.*;
 
 import java.util.*;
 import java.util.concurrent.*;
