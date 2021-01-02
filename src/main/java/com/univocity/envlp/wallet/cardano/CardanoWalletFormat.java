@@ -19,21 +19,23 @@ public final class CardanoWalletFormat implements WalletFormat {
 	public static final CardanoWalletFormat BYRON_27;
 
 	static {
-		formats.add(SHELLEY_24 = new CardanoWalletFormat(SHELLEY, "Daedalus compatible", 24));
-		formats.add(SHELLEY_15 = new CardanoWalletFormat(SHELLEY, "Yoroi compatible", 15));
-		formats.add(BYRON_12 = new CardanoWalletFormat(BYRON, "Daedalus compatible (legacy)", 12));
-		formats.add(BYRON_15 = new CardanoWalletFormat(BYRON, "Yoroi compatible (legacy)", 15));
-		formats.add(BYRON_27 = new CardanoWalletFormat(BYRON, "Daedalus paper wallet (legacy)", 27));
+		formats.add(SHELLEY_24 = new CardanoWalletFormat(SHELLEY, "Daedalus compatible", 24, false));
+		formats.add(SHELLEY_15 = new CardanoWalletFormat(SHELLEY, "Yoroi compatible", 15, false));
+		formats.add(BYRON_12 = new CardanoWalletFormat(BYRON, "Daedalus compatible (legacy)", 12, true));
+		formats.add(BYRON_15 = new CardanoWalletFormat(BYRON, "Yoroi compatible (legacy)", 15, true));
+		formats.add(BYRON_27 = new CardanoWalletFormat(BYRON, "Daedalus paper wallet (legacy)", 27, true));
 	}
 
 	private final String name;
 	private final String description;
 	private final int seedLength;
+	private final boolean legacy;
 
-	private CardanoWalletFormat(String name, String description, int seedLength) {
+	private CardanoWalletFormat(String name, String description, int seedLength, boolean legacy) {
 		this.name = name;
 		this.description = description;
 		this.seedLength = seedLength;
+		this.legacy = legacy;
 	}
 
 	public static CardanoWalletFormat getFormat(AddressStyle addressStyle, Integer wordCount) {
@@ -68,6 +70,11 @@ public final class CardanoWalletFormat implements WalletFormat {
 	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	@Override
+	public boolean isLegacyFormat() {
+		return legacy;
 	}
 
 	@Override

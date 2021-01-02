@@ -4,6 +4,8 @@ import java.util.*;
 
 public interface ExternalWalletService<W extends WalletFormat, T extends WalletRestorationDetails> {
 
+	String description();
+
 	Set<W> supportedWalletFormats();
 
 	ExternalWallet loadWallet(String id);

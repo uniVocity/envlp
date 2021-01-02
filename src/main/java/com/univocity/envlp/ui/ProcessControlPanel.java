@@ -72,6 +72,8 @@ public class ProcessControlPanel extends JPanel {
 		if (!processManager.isProcessRunning()) {
 			timer.start();
 			processManager.startProcess();
+		} else if(!timer.isRunning()){
+			timer.start();
 		}
 	}
 

@@ -62,7 +62,7 @@ public class Database {
 	}
 
 	public static ExtendedJdbcTemplate initLocal() {
-		return new Database("jdbc:h2:./db/wallet").db;
+		return new Database("jdbc:h2:./db/wallet;AUTO_SERVER=TRUE").db;
 	}
 
 	public static ExtendedJdbcTemplate initTest() {

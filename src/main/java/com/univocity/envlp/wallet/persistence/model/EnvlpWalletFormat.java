@@ -7,11 +7,12 @@ import java.time.*;
 public class EnvlpWalletFormat implements WalletFormat {
 
 	private final long id;
-	private EnvlpToken token;
+	private final EnvlpToken token;
 
 	private String name;
 	private String description;
 	private int seedLength;
+	private boolean legacy;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -22,7 +23,7 @@ public class EnvlpWalletFormat implements WalletFormat {
 
 	public EnvlpWalletFormat(long id, EnvlpToken token) {
 		this.id = id;
-		if(token == null){
+		if (token == null) {
 			throw new IllegalStateException("Token information can't be null");
 		}
 		this.token = token;
@@ -81,13 +82,22 @@ public class EnvlpWalletFormat implements WalletFormat {
 	}
 
 	@Override
+	public boolean isLegacyFormat() {
+		return legacy;
+	}
+
+	public void setLegacyFormat(boolean legacy) {
+		this.legacy = legacy;
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		EnvlpWalletFormat that = (EnvlpWalletFormat) o;
 
-		if(id == 0 || that.id == 0){
+		if (id == 0 || that.id == 0) {
 			return WalletFormat.super.equals(that);
 		}
 

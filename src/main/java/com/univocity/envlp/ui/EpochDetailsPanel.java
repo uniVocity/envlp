@@ -135,13 +135,13 @@ public class EpochDetailsPanel extends JPanel {
 		long hours = diff.toHoursPart();
 		long minutes = diff.toMinutesPart();
 		StringBuilder time = new StringBuilder();
-		if(days != 0) {
+		if (days != 0) {
 			append(time, "day", "%d", days, false);
 		}
-		if(hours != 0) {
+		if (hours != 0) {
 			append(time, "hour", "%d", hours, false);
 		}
-		if(minutes != 0) {
+		if (minutes != 0) {
 			append(time, "minute", "%d", minutes, true);
 		}
 		epochDuration.setText(time.toString());
@@ -168,10 +168,10 @@ public class EpochDetailsPanel extends JPanel {
 	private void updateSynchronizationStatus(NetworkInformation networkInformation) {
 		if (networkInformation == null) {
 			syncLbl.setText("waiting for connection with cardano-node");
-		} else if (networkInformation.synchronizationStatus() == SynchronizationStatus.NOT_RESPONDING) {
-			syncLbl.setText("cardano-node not responding");
-		} else if (networkInformation.synchronizationStatus() == SynchronizationStatus.SYNCING) {
-			syncLbl.setText("blocks synced " + networkInformation.formattedSynchronizationProgressPercentage());
+		} else switch (networkInformation.synchronizationStatus()) {
+			case NOT_RESPONDING -> syncLbl.setText("cardano-node not responding");
+			case SYNCING -> syncLbl.setText("blocks synced " + networkInformation.formattedSynchronizationProgressPercentage());
+			case READY -> syncLbl.setText("blocks synced 100%");
 		}
 	}
 

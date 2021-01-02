@@ -13,7 +13,7 @@ import java.util.*;
 public class WalletService {
 
 	private final WalletSnapshotService walletSnapshotService;
-	private final CardanoWalletBackendService externalWalletService;
+	private final ExternalWalletService<?,?> externalWalletService;
 	private final TokenDAO tokenDAO;
 	private final WalletFormatDAO walletFormatDAO;
 	private final ExternalWalletProviderDAO externalWalletProviderDAO;
@@ -21,7 +21,7 @@ public class WalletService {
 
 
 	@Autowired
-	public WalletService(WalletSnapshotService walletSnapshotService, CardanoWalletBackendService externalWalletService, TokenDAO tokenDAO, WalletFormatDAO walletFormatDAO, ExternalWalletProviderDAO externalWalletProviderDAO) {
+	public WalletService(WalletSnapshotService walletSnapshotService, ExternalWalletService<?,?> externalWalletService, TokenDAO tokenDAO, WalletFormatDAO walletFormatDAO, ExternalWalletProviderDAO externalWalletProviderDAO) {
 		this.walletSnapshotService = walletSnapshotService;
 		this.externalWalletService = externalWalletService;
 		this.tokenDAO = tokenDAO;
@@ -36,11 +36,11 @@ public class WalletService {
 		details.seed(seed);
 		details.password(password);
 		details.walletFormat(format);
-		ExternalWalletProvider cardanoWalletProvider = externalWalletProviderDAO.getWalletProviderByClassName(CardanoWalletBackendService.class.getName());
+		ExternalWalletProvider cardanoWalletProvider = externalWalletProviderDAO.getWalletProviderByClassName(externalWalletService.getClass().getName());
 
 		//TODO: proper transaction handling in these 3 lines
 		WalletSnapshot snapshot = walletSnapshotService.createNewWallet(name, seed, format, cardanoWalletProvider);
-		ExternalWallet externalWallet = externalWalletService.createOrRestoreWallet(details);
+		ExternalWallet externalWallet = ((CardanoWalletBackendService)externalWalletService).createOrRestoreWallet(details);
 		walletSnapshotService.associateLocalWallet(snapshot, externalWallet);
 
 		return snapshot;

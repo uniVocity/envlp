@@ -18,6 +18,11 @@ public class CardanoWalletBackendService implements ExternalWalletService<Cardan
 	}
 
 	@Override
+	public String description() {
+		return "ENVLP default Cardano wallet support";
+	}
+
+	@Override
 	public Set<CardanoWalletFormat> supportedWalletFormats() {
 		return CardanoWalletFormat.formats;
 	}

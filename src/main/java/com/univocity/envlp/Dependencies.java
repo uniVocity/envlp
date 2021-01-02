@@ -5,9 +5,12 @@ import com.univocity.cardano.wallet.builders.server.*;
 import com.univocity.envlp.database.*;
 import com.univocity.envlp.wallet.*;
 import com.univocity.envlp.wallet.cardano.*;
+import com.univocity.envlp.wallet.definition.*;
 import com.univocity.envlp.wallet.persistence.dao.*;
 import org.slf4j.*;
 import org.springframework.context.annotation.*;
+
+import java.util.*;
 
 @Configuration
 public class Dependencies {
@@ -15,7 +18,7 @@ public class Dependencies {
 	private static final Logger log = LoggerFactory.getLogger(Dependencies.class);
 
 	@Bean
-	public Main main(){
+	public Main main() {
 		return new Main(configuration(), walletService(), walletServer());
 	}
 
@@ -30,7 +33,7 @@ public class Dependencies {
 	}
 
 	@Bean
-	public WalletFormatDAO walletFormatDAO(){
+	public WalletFormatDAO walletFormatDAO() {
 		return new WalletFormatDAO(tokenDAO());
 	}
 
@@ -66,13 +69,22 @@ public class Dependencies {
 
 	//TODO: refactor to load external wallet support dynamically
 	@Bean
-	public CardanoWalletBackendService externalWalletService() {
+	public ExternalWalletService<?, ?> externalWalletService() {
 		return new CardanoWalletBackendService(walletServer());
 	}
 
 	//TODO: refactor to load external wallet support dynamically
 	@Bean
 	public WalletService walletService() {
+		ExternalWalletService<?, ?> service = externalWalletService();
+		log.info("Initializing wallet backend '{}'", service.description());
+
+		Set<? extends WalletFormat> walletFormats = service.supportedWalletFormats();
+		for (WalletFormat format : walletFormats) {
+			log.info("Enabling support for {}", format.printDetails());
+			walletFormatDAO().persistWalletFormat(walletFormatDAO().wrap(format));
+		}
+
 		return new WalletService(walletSnapshotService(), externalWalletService(), tokenDAO(), walletFormatDAO(), externalWalletProviderDAO());
 	}
 
